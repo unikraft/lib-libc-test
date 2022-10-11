@@ -1,0 +1,61 @@
+From 0f568ec7f64a2b80f8f5579e77e1adc0deeaa9b6 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Sun, 9 Oct 2022 23:06:29 +0300
+Subject: [PATCH] Modify memstream source to work with uktest
+
+---
+ src/functional/memstream.c | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/src/functional/memstream.c b/src/functional/memstream.c
+index 0eef3cc..bcf1b71 100644
+--- a/src/functional/memstream.c
++++ b/src/functional/memstream.c
+@@ -3,24 +3,24 @@
+ #include <stdio.h>
+ #include <errno.h>
+ #include <string.h>
+-#include "test.h"
++#include <uk/test.h>//#include "test.h"
+ 
+-#define TEST(r, f, x, m) ( \
+-((r) = (f)) == (x) || \
+-(t_error("%s failed (" m ")\n", #f, r, x), 0) )
++#define TEST(r, f, x, m) UK_TEST_EXPECT_SNUM_EQ(((r) = (f)), (x))//( 
++//((r) = (f)) == (x) || 
++//(t_error("%s failed (" m ")\n", #f, r, x), 0) )
+ 
+-#define TEST_E(f) ( (errno = 0), (f) || \
+-(t_error("%s failed (errno = %d)\n", #f, errno), 0) )
++#define TEST_E(f) UK_TEST_ASSERT((f))//( (errno = 0), (f) || 
++//(t_error("%s failed (errno = %d)\n", #f, errno), 0) )
+ 
+-#define TEST_S(s, x, m) ( \
+-!strcmp((s),(x)) || \
+-(t_error("[%s] != [%s] (%s)\n", s, x, m), 0) )
++#define TEST_S(s, x, m) UK_TEST_EXPECT_ZERO(strcmp((s),(x)))//( 
++//!strcmp((s),(x)) || 
++//(t_error("[%s] != [%s] (%s)\n", s, x, m), 0) )
+ 
+-#define TEST_M(s, x, n, m) ( \
+-!memcmp((s),(x),(n)) || \
+-(t_error("[%s] != [%s] (%s)\n", s, x, m), 0) )
++#define TEST_M(s, x, n, m) UK_TEST_EXPECT_ZERO(memcmp((s),(x),(n)))//( 
++//!memcmp((s),(x),(n)) || 
++//(t_error("[%s] != [%s] (%s)\n", s, x, m), 0) )
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, memstream_tests)//int main(void)
+ {
+ 	FILE *f;
+ 	char *s;
+@@ -91,5 +91,5 @@ int main(void)
+ 	TEST(i, ftell(f), 8, "%d != %d");
+ 	TEST_S(buf, "hello104", "");
+ 	fclose(f);
+-	return t_status;
++//	return t_status;
+ }
+-- 
+2.25.1
+

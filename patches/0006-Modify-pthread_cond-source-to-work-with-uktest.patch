@@ -1,0 +1,46 @@
+From ae205b44ee142595342b9e12d9693a0e938553ec Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Sun, 7 Aug 2022 19:39:58 +0300
+Subject: [PATCH] Modify pthread_cond source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/pthread_cond.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/functional/pthread_cond.c b/src/functional/pthread_cond.c
+index a9a086a..4adcabe 100644
+--- a/src/functional/pthread_cond.c
++++ b/src/functional/pthread_cond.c
+@@ -1,9 +1,9 @@
+ #include <pthread.h>
+ #include <string.h>
+-#include "test.h"
++#include <uk/test.h>//#include "test.h"
+ 
+-#define TEST(r, f, m) ( \
+-	((r) = (f)) == 0 || (t_error("%s failed: %s (" m ")\n", #f, strerror(r)), 0) )
++#define TEST(r, f, m) UK_TEST_EXPECT_ZERO((f))//( \
++//	((r) = (f)) == 0 || (t_error("%s failed: %s (" m ")\n", #f, strerror(r)), 0) )
+ 
+ 
+ static void *start_signal(void *arg)
+@@ -29,7 +29,7 @@ static void *start_wait(void *arg)
+ 	return 0;
+ }
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, pthread_cond_test)//int main(void)
+ {
+ 	pthread_t td, td1, td2, td3;
+ 	int r;
+@@ -95,5 +95,5 @@ int main(void)
+ 	TEST(r, pthread_mutex_destroy(&mtx), "");
+ 	TEST(r, pthread_cond_destroy(&cond), "");
+ 
+-	return t_status;
++//	return t_status;
+ }
+-- 
+2.25.1
+

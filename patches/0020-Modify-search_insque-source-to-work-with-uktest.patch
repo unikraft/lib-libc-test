@@ -1,0 +1,56 @@
+From 6b2701cc589b06f2a54a43d8c42490ed9c8142dd Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Tue, 11 Oct 2022 23:02:03 +0300
+Subject: [PATCH] Modify search_insque source to work with uktest
+
+---
+ src/functional/search_insque.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/src/functional/search_insque.c b/src/functional/search_insque.c
+index 0f4c370..7aebbf4 100644
+--- a/src/functional/search_insque.c
++++ b/src/functional/search_insque.c
+@@ -3,7 +3,7 @@
+ #endif
+ #include <stdlib.h>
+ #include <search.h>
+-#include "test.h"
++#include <uk/test.h>//"test.h"
+ 
+ struct q {
+ 	struct q *n;
+@@ -18,7 +18,7 @@ static struct q *new(int i)
+ 	return q;
+ }
+ 
+-int main()
++UK_TESTCASE(uk_libc_testsuite, search_insque_tests)//int main()
+ {
+ 	struct q *q = new(0);
+ 	struct q *p;
+@@ -31,14 +31,14 @@ int main()
+ 	}
+ 	p = q;
+ 	while (q) {
+-		if (q->i != --i)
+-			t_error("walking queue: got %d, wanted %d\n", q->i, i);
++		UK_TEST_ASSERT(q->i == --i);//if (q->i != --i)
++		//	t_error("walking queue: got %d, wanted %d\n", q->i, i);
+ 		q = q->p;
+ 	}
+ 	remque(p->p);
+-	if (p->p->i != p->i-2)
+-		t_error("remque: got %d, wanted %d\n", p->p->i, p->i-2);
+-	if (p->p->n->i != p->i)
+-		t_error("remque: got %d, wanted %d\n", p->p->n->i, p->i);
+-	return t_status;
++UK_TEST_ASSERT(p->p->i == p->i-2);//	if (p->p->i != p->i-2)
++//		t_error("remque: got %d, wanted %d\n", p->p->i, p->i-2);
++UK_TEST_ASSERT(p->p->n->i == p->i);//	if (p->p->n->i != p->i)
++//		t_error("remque: got %d, wanted %d\n", p->p->n->i, p->i);
++//	return t_status;
+ }
+-- 
+2.25.1
+

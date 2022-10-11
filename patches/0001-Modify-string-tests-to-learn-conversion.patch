@@ -1,0 +1,56 @@
+From 2fe68ae3521b899ebd0f7860b90d703c2159b063 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Sat, 6 Aug 2022 19:49:44 +0300
+Subject: [PATCH] Modify string tests to learn conversion
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/string.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/src/functional/string.c b/src/functional/string.c
+index 682a1c7..17d1af8 100644
+--- a/src/functional/string.c
++++ b/src/functional/string.c
+@@ -2,7 +2,7 @@
+ #define _BSD_SOURCE 1
+ #include <stdio.h>
+ #include <string.h>
+-#include "test.h"
++#include <uk/test.h>//#include "test.h"
+ 
+ /* r = place to store result
+  * f = function call to test (or any expression)
+@@ -10,15 +10,15 @@
+  * m = message to print on failure (with formats for r & x)
+ **/
+ 
+-#define TEST(r, f, x, m) ( \
+-	((r) = (f)) == (x) || \
+-	(t_error("%s failed (" m ")\n", #f, r, x), 0) )
++#define TEST(r, f, x, m) UK_TEST_ASSERT(((r) = (f)) == (x))//( \
++//	((r) = (f)) == (x) || \
++//	(t_error("%s failed (" m ")\n", #f, r, x), 0) )
+ 
+-#define TEST_S(s, x, m) ( \
+-	!strcmp((s),(x)) || \
+-	(t_error("[%s] != [%s] (%s)\n", s, x, m), 0) )
++#define TEST_S(s, x, m) UK_TEST_EXPECT_ZERO(strcmp((s), (x)))//( \
++//	!strcmp((s),(x)) || \
++//	(t_error("[%s] != [%s] (%s)\n", s, x, m), 0) )
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, string_tests)//int main(void)
+ {
+ 	char b[32];
+ 	char *s;
+@@ -112,5 +112,5 @@ int main(void)
+ 	TEST(i, strlcat(b, "123", 3), 6, "length %d != %d");
+ 	TEST_S(b, "abc", "strlcat result");
+ 
+-	return t_status;
++//	return t_status;
+ }
+-- 
+2.25.1
+

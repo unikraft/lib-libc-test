@@ -1,0 +1,38 @@
+From fb49c5b4b90d9cb3ddeb5aee8f290101e174ceee Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Tue, 11 Oct 2022 23:19:45 +0300
+Subject: [PATCH] Modify setjmp source to work with uktest
+
+---
+ src/functional/setjmp.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/functional/setjmp.c b/src/functional/setjmp.c
+index 7ba09d3..d704372 100644
+--- a/src/functional/setjmp.c
++++ b/src/functional/setjmp.c
+@@ -1,11 +1,11 @@
+ #include <string.h>
+ #include <signal.h>
+ #include <setjmp.h>
+-#include "test.h"
++#include <uk/test.h>"test.h"
+ 
+-#define TEST(c, ...) ((c) ? 1 : (t_error(#c" failed: " __VA_ARGS__),0))
++#define TEST(c, ...) UK_TEST_ASSERT((c))//((c) ? 1 : (t_error(#c" failed: " __VA_ARGS__),0))
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, setjmp_tests)//int main(void)
+ {
+ 	volatile int x = 0, r;
+ 	jmp_buf jb;
+@@ -61,5 +61,5 @@ int main(void)
+ 	sigprocmask(SIG_SETMASK, &set, &set2);
+ 	TEST(sigismember(&set2, SIGUSR1)==1, "siglongjmp incorrectly restored mask\n");
+ 
+-	return t_status;
++//	return t_status;
+ }
+-- 
+2.25.1
+
