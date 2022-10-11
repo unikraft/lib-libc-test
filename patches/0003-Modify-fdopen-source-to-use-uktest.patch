@@ -1,0 +1,63 @@
+From 180688b41b8518cc0802024eef003801b93107ca Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Sun, 7 Aug 2022 17:42:14 +0300
+Subject: [PATCH] Modify fdopen source to use uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/fdopen.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/src/functional/fdopen.c b/src/functional/fdopen.c
+index 88f7561..24242dd 100644
+--- a/src/functional/fdopen.c
++++ b/src/functional/fdopen.c
+@@ -3,33 +3,33 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <unistd.h>
+-#include "test.h"
++#include <uk/test.h>//#include "test.h"
+ 
+-#define TEST(c) do { \
+-	errno = 0; \
+-	if (!(c)) \
+-		t_error("%s failed (errno = %d)\n", #c, errno); \
+-} while(0)
++#define TEST(c) UK_TEST_ASSERT((c))//do { \
++//	errno = 0; \
++//	if (!(c)) \
++//		t_error("%s failed (errno = %d)\n", #c, errno); \
++//} while(0)
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, fdopen_tests)//int main(void)
+ {
+-	char tmp[] = "/tmp/testsuite-XXXXXX";
++	char tmp[] = "/testsuite-XXXXXX";
+ 	char foo[6];
+ 	int fd;
+ 	FILE *f;
+ 
+ 	TEST((fd = mkstemp(tmp)) > 2);
+ 	TEST(write(fd, "hello", 6)==6);
+-	TEST(f = fdopen(fd, "rb"));
++	TEST((f = fdopen(fd, "rb")) != NULL);
+ 	if (f) {
+ 		TEST(ftello(f)==6);
+ 		TEST(fseeko(f, 0, SEEK_SET)==0);
+ 		TEST(fgets(foo, sizeof foo, f));
+-		if (strcmp(foo,"hello") != 0)
+-			t_error("fgets read back: \"%s\"; wanted: \"hello\"\n", foo);
++		TEST(!strcmp(foo,"hello") != 0);
++//			t_error("fgets read back: \"%s\"; wanted: \"hello\"\n", foo);
+ 		fclose(f);
+ 	}
+ 	if (fd > 2)
+ 		TEST(unlink(tmp) != -1);
+-	return t_status;
++//	return t_status;
+ }
+-- 
+2.25.1
+

@@ -1,0 +1,86 @@
+From 37d3b17d81cc658be68e0c3dcdfdab7a90edb093 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Sun, 7 Aug 2022 19:23:53 +0300
+Subject: [PATCH] Modify pthread_robust source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/pthread_robust.c | 36 ++++++++++++++++-----------------
+ 1 file changed, 18 insertions(+), 18 deletions(-)
+
+diff --git a/src/functional/pthread_robust.c b/src/functional/pthread_robust.c
+index 44f846f..a22317b 100644
+--- a/src/functional/pthread_robust.c
++++ b/src/functional/pthread_robust.c
+@@ -1,12 +1,12 @@
+ #include <pthread.h>
+ #include <string.h>
+ #include <errno.h>
+-#include "test.h"
++#include <uk/test.h>//#include "test.h"
+ 
+-#define TEST(r, f, m) ( \
+-	((r) = (f)) == 0 || (t_error("%s failed: (pshared==%d, pi==%d) %s (" m ")\n", #f, pshared, pi, strerror(r)), 0) )
+-#define TESTX(r, f, x, m) ( \
+-	((r) = (f)) == (x) || (t_error("%s failed: (pshared==%d, pi==%d) got %d \"%s\" want %d \"%s\" (" m ")\n", #f, pshared, pi, r, strerror(r), x, strerror(x)), 0) )
++#define TEST(r, f, m) UK_TEST_EXPECT_ZERO(f)//( \
++	//((r) = (f)) == 0 || (t_error("%s failed: (pshared==%d, pi==%d) %s (" m ")\n", #f, pshared, pi, strerror(r)), 0) )
++#define TESTX(r, f, x, m) UK_TEST_EXPECT_SNUM_EQ(f, x)//( \
++	//((r) = (f)) == (x) || (t_error("%s failed: (pshared==%d, pi==%d) got %d \"%s\" want %d \"%s\" (" m ")\n", #f, pshared, pi, r, strerror(r), x, strerror(x)), 0) )
+ 
+ static void *start_lock(void *arg)
+ {
+@@ -23,7 +23,7 @@ static void *start_wait(void *arg)
+ 	return 0;
+ }
+ 
+-void f(int pshared, int pi)
++UK_TESTCASE(uk_libc_testsuite, pthread_robust_test)//void f(int pshared, int pi)
+ {
+ 	pthread_t td;
+ 	int r;
+@@ -31,7 +31,7 @@ void f(int pshared, int pi)
+ 	pthread_barrier_t barrier2;
+ 	pthread_mutexattr_t mtx_a;
+ 	pthread_mutex_t mtx;
+-
++	for(int pshared=0; pshared<=1; pshared++) for(int pi=0; pi<=1; pi++){
+ 	TEST(r, pthread_barrier_init(&barrier2, 0, 2), "creating barrier");
+ 
+ 	/* Robust mutexes */
+@@ -63,21 +63,21 @@ void f(int pshared, int pi)
+ 	TEST(r, pthread_mutex_init(&mtx, &mtx_a), "");
+ 	TEST(r, pthread_create(&td, 0, start_wait, (void *[]){ &barrier2, &mtx }), "");
+ 	r = pthread_barrier_wait(&barrier2);
+-	if (r && r != PTHREAD_BARRIER_SERIAL_THREAD)
+-		t_error("pthread_barrier_wait failed: got %d \"%s\", wanted either 0 or %d\n",
+-			r, strerror(r), PTHREAD_BARRIER_SERIAL_THREAD);
++	UK_TEST_ASSERT((r && r != PTHREAD_BARRIER_SERIAL_THREAD));
++//		t_error("pthread_barrier_wait failed: got %d \"%s\", wanted either 0 or %d\n",
++//			r, strerror(r), PTHREAD_BARRIER_SERIAL_THREAD);
+ 	TEST(r, pthread_barrier_destroy(&barrier2), "");
+ 	TESTX(r, pthread_mutex_lock(&mtx), EOWNERDEAD, "");
+ 	TEST(r, pthread_join(td, &res), "");
+ 	TEST(r, pthread_mutex_consistent(&mtx), "");
+ 	TEST(r, pthread_mutex_unlock(&mtx), "");
+ 	TEST(r, pthread_mutex_destroy(&mtx), "");
+-}
++}}
+ 
+-int main(void)
+-{
+-	for (int pshared=0; pshared<=1; pshared++)
+-		for (int pi=0; pi<=1; pi++)
+-			f(pshared, pi);
+-	return t_status;
+-}
++//int main(void)
++//{
++//	for (int pshared=0; pshared<=1; pshared++)
++//		for (int pi=0; pi<=1; pi++)
++//			pshared_test(pshared, pi);
++//	return t_status;
++//}
+-- 
+2.25.1
+

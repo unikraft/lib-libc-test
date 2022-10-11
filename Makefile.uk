@@ -1,0 +1,99 @@
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# libc-test Unikraft library
+#
+# Authors: Florin Postolache <florin.postolache80@gmail.com>
+#
+# Copyright (c) 2022, Florin Postolache <florin.postolache80@gmail.com>. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. Neither the name of the copyright holder nor the names of its
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+################################################################################
+# Library registration
+################################################################################
+$(eval $(call addlib_s,liblibctest,$(CONFIG_LIBLIBCTEST)))
+
+################################################################################
+# Sources
+################################################################################]
+LIBLIBCTEST_PATCHDIR = $(LIBLIBCTEST_BASE)/patches
+LIBLIBCTEST_URL = git://nsz.repo.hu:49100/repo/libc-test
+LIBLIBCTEST_BRANCH = master
+
+$(eval $(call clone,liblibctest,$(LIBLIBCTEST_URL),$(LIBLIBCTEST_BRANCH),$(LIBLIBCTEST_PATCHDIR)))
+
+################################################################################
+# Helpers
+################################################################################
+LIBLIBCTEST_EXTRACTED = $(LIBLIBCTEST_ORIGIN)/src
+
+################################################################################
+# Library includes
+################################################################################
+CINCLUDES-y += -I$(LIBLIBCTEST_BASE)/include
+
+################################################################################
+# Flags
+################################################################################
+LIBLIBCTEST_FLAGS = -Wno-type-limits
+LIBLIBCTEST_FLAGS += -Wno-unused-parameter 
+LIBLIBCTEST_FLAGS += -Wno-comment
+LIBLIBCTEST_FLAGS += -Wno-int-conversion
+LIBLIBCTEST_FLAGS += -Wno-stringop-truncation
+LIBLIBCTEST_FLAGS += -Wno-unused-variable
+LIBLIBCTEST_FLAGS += -Wno-implicit-function-declaration
+
+# Suppress some warnings to make the build process look neater
+LIBLIBCTEST_FLAGS_SUPPRESS =
+
+LIBLIBCTEST_CFLAGS-y += $(LIBLIBCTEST_FLAGS)
+LIBLIBCTEST_CFLAGS-y += $(LIBLIBCTEST_FLAGS_SUPPRESS)
+
+################################################################################
+# Library sources
+################################################################################
+LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_BASE)/include/main.c
+LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/string.c
+LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/clock_gettime.c
+LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/fdopen.c
+LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/fscanf.c
+LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/pthread_tsd.c
+LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/sem_init.c
+LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/crypt.c
+LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/memstream.c
+LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/basename.c
+LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/popen.c
+LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/dirname.c
+LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/string_memmem.c
+LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/search_insque.c
+#LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/string_memcpy.c
+#LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/spawn.c
+#LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/socket.c
+#LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/sem_open.c
+#LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/pthread_robust.c
+#LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/pthread_cond.c
+#LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/pthread_cancel.c
+#LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/pthread_cancel-points.c
