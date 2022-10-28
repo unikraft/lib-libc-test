@@ -1,0 +1,67 @@
+From b81f02fce21e7e4923e9ec0979b7ad36994979e8 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Tue, 25 Oct 2022 12:38:08 +0300
+Subject: [PATCH] Modify udiv source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/udiv.c | 31 ++++---------------------------
+ 1 file changed, 4 insertions(+), 27 deletions(-)
+
+diff --git a/src/functional/udiv.c b/src/functional/udiv.c
+index 0dbd619..6b6fdda 100644
+--- a/src/functional/udiv.c
++++ b/src/functional/udiv.c
+@@ -1,26 +1,6 @@
+-#include "test.h"
++#include <uk/test.h>
+ #include <stdint.h>
+ 
+-/*
+-static uint64_t randstate = 0x123456789abcdef0ull;
+-static uint64_t rnd(void) {
+-	randstate = 6364136223846793005ull*randstate + 1;
+-	return randstate;
+-}
+-void test_maketest()
+-{
+-	int i;
+-	uint64_t x,y;
+-	for (i = 0; i < 128; i++) {
+-		x = rnd();
+-		y = rnd()>>(i/2);
+-		if (!y)
+-			continue;
+-		printf("0x%llxull, 0x%llxull, 0x%llxull, 0x%llxull,\n", x, y, x/y, x%y);
+-	}
+-}
+-*/
+-
+ static struct {
+ 	uint64_t x, y, div, mod;
+ } t[] = {
+@@ -149,7 +129,7 @@ static struct {
+ 0x4b21d01617167e39ull, 0x2ull, 0x2590e80b0b8b3f1cull, 0x1ull,
+ };
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, udiv_tests)
+ {
+ 	uint64_t x, y, div, mod;
+ 	int i;
+@@ -159,10 +139,7 @@ int main(void)
+ 		y = t[i].y;
+ 		div = x / y;
+ 		mod = x % y;
+-		if (div != t[i].div)
+-			t_error("udiv %llu/%llu want %llu got %llu\n", x, y, t[i].div, div);
+-		if (mod != t[i].mod)
+-			t_error("umod %llu%%%llu want %llu got %llu\n", x, y, t[i].mod, mod);
++		UK_TEST_ASSERT(div == t[i].div);
++		UK_TEST_ASSERT(mod == t[i].mod);
+ 	}
+-	return t_status;
+ }
+-- 
+2.25.1
+

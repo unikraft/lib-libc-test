@@ -1,0 +1,64 @@
+From bead4ef43959f5862e29c657bc300dddbb1d29a9 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Sun, 23 Oct 2022 19:53:23 +0300
+Subject: [PATCH] Modify mbc source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/mbc.c | 21 ++++++++-------------
+ 1 file changed, 8 insertions(+), 13 deletions(-)
+
+diff --git a/src/functional/mbc.c b/src/functional/mbc.c
+index 65dceaa..7614616 100644
+--- a/src/functional/mbc.c
++++ b/src/functional/mbc.c
+@@ -4,23 +4,20 @@
+ #include <stdlib.h>
+ #include <locale.h>
+ #include <langinfo.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ /*
+  * f = function call to test (or any expression)
+  * x = expected result
+  * m = message to print on failure
+  */
+-#define T(f, x, m) (void)( \
+-	memset(&st, 0, sizeof st), \
+-	(i = (f)) == (x) || \
+-		t_error("%s failed (%s) got %d want %d\n", #f, m, i, x) )
+-#define TCHAR(f, x, m) (void)( \
+-	memset(&st, 0, sizeof st), \
+-	(i = (f)) == (x) || \
+-		t_error("%s failed (%s) got 0x%04x want 0x%04x\n", #f, m, i, x) )
++#define T(f, x, m) memset(&st, 0, sizeof st); \
++	UK_TEST_ASSERT(((i = (f)) == (x)))
++		
++#define TCHAR(f, x, m) memset(&st, 0, sizeof st); \
++	UK_TEST_ASSERT(((i = (f)) == (x)))
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, mbc_test)
+ {
+ 	const char *cs;
+ 	int i;
+@@ -40,8 +37,7 @@ int main(void)
+ 	T(mbsrtowcs(wcs, (cs="abcdef",&cs), 8, &st), 6, "wrong semantics for wcs buf len");
+ 	T(mbsrtowcs(NULL, (cs="abcdef",&cs), 2, &st), 6, "wrong semantics for NULL wcs");
+ 
+-	if (strcmp(nl_langinfo(CODESET), "UTF-8"))
+-		return t_error("cannot set UTF-8 locale for test (codeset=%s)\n", nl_langinfo(CODESET));
++	UK_TEST_EXPECT_ZERO(strcmp(nl_langinfo(CODESET), "UTF-8"));
+ 
+ 	T(mbrtowc(&wc, "\x80", 1, &st), -1, "failed to catch error");
+ 	T(mbrtowc(&wc, "\xc0", 1, &st), -1, "failed to catch illegal initial");
+@@ -81,5 +77,4 @@ int main(void)
+ 	TCHAR(wcs[0], 0xa0, "wrong char");
+ 	TCHAR(wcs[1], 'a', "wrong char");
+ 	T(!cs, 1, "wrong final position");
+-	return t_status;
+ }
+-- 
+2.25.1
+

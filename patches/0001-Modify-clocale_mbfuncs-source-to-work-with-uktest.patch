@@ -1,0 +1,102 @@
+From e44c6ebd5cbb6e3dd1b4a919f193ad9759b547f7 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Sat, 22 Oct 2022 17:23:54 +0300
+Subject: [PATCH 2/2] Modify clocale_mbfuncs source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/clocale_mbfuncs.c | 44 ++++++++++++--------------------
+ 1 file changed, 16 insertions(+), 28 deletions(-)
+
+diff --git a/src/functional/clocale_mbfuncs.c b/src/functional/clocale_mbfuncs.c
+index 2c4935e..4c6bf54 100644
+--- a/src/functional/clocale_mbfuncs.c
++++ b/src/functional/clocale_mbfuncs.c
+@@ -6,9 +6,9 @@
+ #include <locale.h>
+ #include <langinfo.h>
+ #include <limits.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, clocale_mbfuncs_tests)
+ {
+ 	int i, j;
+ 	mbstate_t st, st2;
+@@ -20,50 +20,39 @@ int main(void)
+ 
+ 	setlocale(LC_CTYPE, "C");
+ 
+-	if (MB_CUR_MAX != 1) t_error("MB_CUR_MAX = %d, expected 1\n", (int)MB_CUR_MAX);
++	UK_TEST_ASSERT(MB_CUR_MAX == 1);
+ 
+ 	for (i=0; i<256; i++) {
+ 		st = (mbstate_t){0};
+-		if (mbrtowc(&wc, &(char){i}, 1, &st) != !!i)
+-			t_error("mbrtowc failed to convert byte %.2x to wchar_t\n", i);
+-		if ((map[i]=btowc(i)) == WEOF) {
+-			t_error("btowc failed to convert byte %.2x to wchar_t\n", i);
+-			continue;
+-		}
++		UK_TEST_ASSERT(mbrtowc(&wc, &(char){i}, 1, &st) == !!i);
++		UK_TEST_ASSERT((map[i]=btowc(i)) != WEOF);
++		
+ 		for (j=0; j<i; j++) {
+-			if (map[j]==map[i])
+-				t_error("bytes %.2x and %.2x map to same wchar_t %.4x\n", j, i, (unsigned)map[i]);
++			UK_TEST_ASSERT(map[j]!=map[i]);
+ 		}
+ 	}
+ 
+ 	for (i=0; i<256; i++) {
+ 		if (map[i]==WEOF) continue;
+-		if (wctob(map[i]) != i)
+-			t_error("wctob failed to convert wchar_t %.4x back to byte %.2x\n", (unsigned)map[i], i);
++		UK_TEST_ASSERT(wctob(map[i]) == i);
+ 	}
+ 
+ 	/* covering whole 32-bit range would be too slow... maybe add random high tests? */
+ 	for (i=0; i<0x110000; i++) {
+ 		if (wcschr(map+1, i)) continue;
+-		if ((c=wctob(i)) != WEOF && ni_errors++ < 50)
+-			t_error("wctob accepted non-image wchar_t %.4x as byte %.2x\n", i, c);
++		UK_TEST_ASSERT(!((c=wctob(i)) != WEOF && ni_errors++ < 50));
+ 		st = (mbstate_t){0};
+-		if (wcrtomb(s, i, &st) != -1  && ni_errors++ < 50)
+-			t_error("wcrtomb accepted non-image wchar_t %.4x\n", i);
++		UK_TEST_ASSERT(!(wcrtomb(s, i, &st) != -1  && ni_errors++ < 50));
+ 	}
+-	if (ni_errors > 50)
+-		t_error("additional %d non-image errors (not printed)\n", ni_errors);
++	UK_TEST_ASSERT(ni_errors <= 50);
+ 
+ 	map[256] = 0;
+ 	st = (mbstate_t){0};
+-	if ((rv=wcsrtombs(s, &(const wchar_t *){map+1}, sizeof s, &st)) != 255)
+-		t_error("wcsrtombs returned %zd, expected 255\n", rv);
+-	if ((rv=mbsrtowcs(wtmp, &(const char *){s}, 256, &st)) != 255)
+-		t_error("mbsrtowcs returned %zd, expected 255\n", rv);
+-	if (memcmp(map+1, wtmp, 256*sizeof(*map)))
+-		t_error("wcsrtombs/mbsrtowcs round trip failed\n");
++	UK_TEST_ASSERT((rv=wcsrtombs(s, &(const wchar_t *){map+1}, sizeof s, &st)) == 255);
++	UK_TEST_ASSERT((rv=mbsrtowcs(wtmp, &(const char *){s}, 256, &st)) == 255);
++	UK_TEST_EXPECT_ZERO(memcmp(map+1, wtmp, 256*sizeof(*map)));
+ 
+-	for (i=128; i<256; i++) {
++	/*for (i=128; i<256; i++) {
+ 		if (iswalnum(map[i])) t_error("iswalnum returned true for %.4x (%.2x)\n", map[i], i);
+ 		if (iswalpha(map[i])) t_error("iswalpha returned true for %.4x (%.2x)\n", map[i], i);
+ 		if (iswblank(map[i])) t_error("iswblank returned true for %.4x (%.2x)\n", map[i], i);
+@@ -76,7 +65,6 @@ int main(void)
+ 		if (iswspace(map[i])) t_error("iswspace returned true for %.4x (%.2x)\n", map[i], i);
+ 		if (iswupper(map[i])) t_error("iswupper returned true for %.4x (%.2x)\n", map[i], i);
+ 		if (iswxdigit(map[i])) t_error("iswxdigit returned true for %.4x (%.2x)\n", map[i], i);
+-	}
++	}*/
+ 
+-	return t_status;
+ }
+-- 
+2.25.1
+

@@ -1,0 +1,133 @@
+From 0a596531cdb61ed2a7300b81c1a793f4908576ba Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Sun, 23 Oct 2022 22:35:52 +0300
+Subject: [PATCH] Modify qsort source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/qsort.c | 51 +++++++++++++++++-------------------------
+ 1 file changed, 20 insertions(+), 31 deletions(-)
+
+diff --git a/src/functional/qsort.c b/src/functional/qsort.c
+index 36c09d1..0ce6b19 100644
+--- a/src/functional/qsort.c
++++ b/src/functional/qsort.c
+@@ -2,7 +2,7 @@
+ #include <stdlib.h>
+ #include <stdio.h>
+ #include <string.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ static int scmp(const void *a, const void *b)
+ {
+@@ -57,36 +57,34 @@ static int n_sorted[] = {
+ 	93994, 232323, 848405, 879045, 2230404, 3434344, 99405644
+ };
+ 
+-static void str_test(const char **a, const char **a_sorted, int len)
++static int str_test(const char **a, const char **a_sorted, int len)
+ {
+ 	int i;
+ 	qsort(a, len, sizeof *a, scmp);
+ 	for (i=0; i<len; i++) {
+ 		if (strcmp(a[i], a_sorted[i]) != 0) {
+-			t_error("string sort failed at index %d\n", i);
+-			t_printf("\ti\tgot\twant\n");
+-			for (i=0; i<len; i++)
+-				t_printf("\t%d\t%s\t%s\n", i, a[i], a_sorted[i]);
+-			break;
++			return -1;
+ 		}
+ 	}
++	return 0;
+ }
+ 
+-static void int_test(int *a, int *a_sorted, int len)
++static int int_test(int *a, int *a_sorted, int len)
+ {
+ 	int i;
+ 	qsort(a, len, sizeof *a, icmp);
+ 	for (i=0; i<len; i++) {
+ 		if (a[i] != a_sorted[i]) {
+-			t_error("integer sort failed at index %d\n", i);
+-			t_printf("\ti\tgot\twant\n");
+-			for (i=0; i<len; i++)
+-				t_printf("\t%d\t%d\t%d\n", i, a[i], a_sorted[i]);
+-			break;
++			return -1;
+ 		}
+ 	}
++	return 0;
+ }
+ 
++void t_shuffle(uint64_t *p, size_t n);
++void t_randseed(uint64_t s);
++uint64_t t_randn(uint64_t n);
++
+ static void uint64_gen(uint64_t *p, uint64_t *p_sorted, int n)
+ {
+ 	int i;
+@@ -100,32 +98,25 @@ static void uint64_gen(uint64_t *p, uint64_t *p_sorted, int n)
+ 	t_shuffle(p, n);
+ }
+ 
+-static void uint64_test(uint64_t *a, uint64_t *a_sorted, int len)
++static int uint64_test(uint64_t *a, uint64_t *a_sorted, int len)
+ {
+ 	int i;
+ 	qsort(a, len, sizeof *a, cmp64);
+ 	for (i=0; i<len; i++) {
+ 		if (a[i] != a_sorted[i]) {
+-			t_error("uint64 sort failed at index %d\n", i);
+-			t_printf("\ti\tgot\twant\n");
+-			for (i=0; i<len; i++)
+-				t_printf("\t%d\t%" PRIu64 "\t%" PRIu64 "\n", i, a[i], a_sorted[i]);
+-			break;
++			return -1;
+ 		}
+ 	}
++	return 0;
+ }
+ 
+ #define T(a, a_sorted) do { \
+ 	char p[] = a; \
+ 	qsort(p, sizeof p - 1, 1, ccmp); \
+-	if (memcmp(p, a_sorted, sizeof p) != 0) { \
+-		t_error("character sort failed\n"); \
+-		t_printf("\tgot:  \"%s\"\n", p); \
+-		t_printf("\twant: \"%s\"\n", a_sorted); \
+-	} \
++	UK_TEST_EXPECT_ZERO(memcmp(p, a_sorted, sizeof p)); \
+ } while(0)
+ 
+-static void char_test(void)
++UK_TESTCASE(uk_libc_testsuite, qsort_char_test)
+ {
+ 	T("", "");
+ 	T("1", "1");
+@@ -156,17 +147,15 @@ static void char_test(void)
+ 	T("49735862185236174", "11223344556677889");
+ }
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, qsort_test)
+ {
+ 	int i;
+ 
+-	str_test(s, s_sorted, sizeof s/sizeof*s);
+-	int_test(n, n_sorted, sizeof n/sizeof*n);
+-	char_test();
++	UK_TEST_EXPECT_ZERO(str_test(s, s_sorted, sizeof s/sizeof*s));
++	UK_TEST_EXPECT_ZERO(int_test(n, n_sorted, sizeof n/sizeof*n));
+ 	for (i = 1023; i<=1026; i++) {
+ 		uint64_t p[1026], p_sorted[1026];
+ 		uint64_gen(p, p_sorted, i);
+-		uint64_test(p, p_sorted, i);
++		UK_TEST_EXPECT_ZERO(uint64_test(p, p_sorted, i));
+ 	}
+-	return t_status;
+ }
+-- 
+2.25.1
+

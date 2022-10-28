@@ -1,0 +1,45 @@
+From 21ef1341622d7ef52b1c6d5cfbbb75dc3027fed8 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 28 Oct 2022 00:26:34 +0300
+Subject: [PATCH] Modify printf-fmt-g-zeros source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/printf-fmt-g-zeros.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/src/regression/printf-fmt-g-zeros.c b/src/regression/printf-fmt-g-zeros.c
+index 2b08691..d37d171 100644
+--- a/src/regression/printf-fmt-g-zeros.c
++++ b/src/regression/printf-fmt-g-zeros.c
+@@ -2,20 +2,20 @@
+ // %g should not print trailing zeros
+ #include <stdio.h>
+ #include <string.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-static void t(const char *fmt, double d, const char *want)
++static int t(const char *fmt, double d, const char *want)
+ {
+ 	char buf[256];
+ 	int n = strlen(want);
+ 	int r = snprintf(buf, sizeof buf, fmt, d);
+ 	if (r != n || memcmp(buf, want, n+1) != 0)
+-		t_error("snprintf(\"%s\",%f) want %s got %s\n", fmt, d, want, buf);
++		return -1;
++	return 0;
+ }
+ 
+-int main()
++UK_TESTCASE(uk_libc_testsuite, printf_fmt_g_zeros_tests)
+ {
+-	t("%.50g", 100000000000000.5, "100000000000000.5");
+-	t("%.50g", 987654321098765.0, "987654321098765");
+-	return t_status;
++	UK_TEST_EXPECT_ZERO(t("%.50g", 100000000000000.5, "100000000000000.5"));
++	UK_TEST_EXPECT_ZERO(t("%.50g", 987654321098765.0, "987654321098765"));
+ }
+-- 
+2.25.1
+

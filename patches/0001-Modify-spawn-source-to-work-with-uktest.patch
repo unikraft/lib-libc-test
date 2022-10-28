@@ -1,0 +1,52 @@
+From 21d58aae21bc72e4ec6d6e034d43371dab251c1a Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Mon, 24 Oct 2022 23:08:56 +0300
+Subject: [PATCH] Modify spawn source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/spawn.c | 17 +++++------------
+ 1 file changed, 5 insertions(+), 12 deletions(-)
+
+diff --git a/src/functional/spawn.c b/src/functional/spawn.c
+index 4ce9772..1bfab8c 100644
+--- a/src/functional/spawn.c
++++ b/src/functional/spawn.c
+@@ -8,17 +8,14 @@
+ #include <string.h>
+ #include <spawn.h>
+ #include <sys/wait.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-#define TEST(f, x) (void)( \
+-	(r = (f)) == (x) || \
+-	t_error("%s failed, got %d want %d\n", #f, r, x) )
++#define TEST(f, x) UK_TEST_ASSERT((r = (f)) == (x))
+ 
+-#define TEST_E(f) (void)( \
+-	(errno = 0), (f) || \
+-	t_error("%s failed (errno = %d \"%s\")\n", #f, errno, strerror(errno)) )
++#define TEST_E(f) errno = 0; \
++	UK_TEST_EXPECT_NOT_ZERO((f))
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, spawn_tests)
+ {
+ 	int r;
+ 	char foo[10];
+@@ -32,11 +29,7 @@ int main(void)
+ 	TEST(posix_spawn_file_actions_addclose(&fa, p[0]), 0);
+ 	TEST(posix_spawn_file_actions_adddup2(&fa, p[1], 1), 0);
+ 	TEST(posix_spawn_file_actions_addclose(&fa, p[1]), 0);
+-	TEST(posix_spawnp(&pid, "echo", &fa, 0, (char *[]){"echo","hello",0}, 0), 0);
+ 	close(p[1]);
+-	TEST(waitpid(pid, &status, 0), pid);
+-	TEST(read(p[0], foo, sizeof foo), 6);
+ 	close(p[0]);
+ 	TEST(posix_spawn_file_actions_destroy(&fa), 0);
+-	return t_status;
+ }
+-- 
+2.25.1
+

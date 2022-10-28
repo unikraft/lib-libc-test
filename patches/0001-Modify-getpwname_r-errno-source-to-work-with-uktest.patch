@@ -1,0 +1,36 @@
+From 2adf1a4aaaba5a4b5efdf5c39274dc5614e1e0ca Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 27 Oct 2022 13:01:05 +0300
+Subject: [PATCH] Modify getpwname_r-errno source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/getpwnam_r-errno.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/src/regression/getpwnam_r-errno.c b/src/regression/getpwnam_r-errno.c
+index bb8685e..a8ca800 100644
+--- a/src/regression/getpwnam_r-errno.c
++++ b/src/regression/getpwnam_r-errno.c
+@@ -3,15 +3,13 @@
+ 
+ #include <pwd.h>
+ #include <errno.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, getpwnam_r_errno_tests)
+ {
+ 	int baderr = EOWNERDEAD; // arbitrary absurd error
+ 	struct passwd *pw, pwbuf;
+ 	char buf[1024];
+ 	errno = baderr;
+-	if (getpwnam_r("nonsensical_user", &pwbuf, buf, sizeof buf, &pw) == baderr)
+-		t_error("getpwnam_r used preexisting errno for nonexisting user\n");
+-	return t_status;
++	UK_TEST_ASSERT(getpwnam_r("nonsensical_user", &pwbuf, buf, sizeof buf, &pw) != baderr);
+ }
+-- 
+2.25.1
+

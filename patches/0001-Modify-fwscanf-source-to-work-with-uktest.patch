@@ -1,0 +1,67 @@
+From 78ccdba1b8ab6d8ecc6d294676acba9997ca9714 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Sun, 23 Oct 2022 00:55:59 +0300
+Subject: [PATCH] Modify fwscanf source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/fwscanf.c | 20 +++++++-------------
+ 1 file changed, 7 insertions(+), 13 deletions(-)
+
+diff --git a/src/functional/fwscanf.c b/src/functional/fwscanf.c
+index 18b68e8..6546d1c 100644
+--- a/src/functional/fwscanf.c
++++ b/src/functional/fwscanf.c
+@@ -4,35 +4,31 @@
+ #include <limits.h>
+ #include <unistd.h>
+ #include <wchar.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-#define TEST(r, f, x, m) ( \
+-	errno=0, ((r) = (f)) == (x) || \
+-	(t_error("%s failed (" m ")\n", #f, r, x, strerror(errno)), 0) )
++#define TEST(r, f, x, m) UK_TEST_EXPECT_SNUM_EQ((f),(x))
+ 
+-#define TEST_S(s, x, m) ( \
+-	!strcmp((s),(x)) || \
+-	(t_error("[%s] != [%s] (%s)\n", s, x, m), 0) )
++#define TEST_S(s, x, m) UK_TEST_EXPECT_ZERO(strcmp(s, x))
++
++FILE *__tmpfile_modified(void);
+ 
+ static FILE *writetemp(const char *data)
+ {
+-	FILE *f = tmpfile();
++	FILE *f = __tmpfile_modified();
+ 	size_t n = strlen(data);
+ 	if (!f) return 0;
+ 	if (write(fileno(f), data, n) != n) {
+-		t_error("write: %s\n", strerror(errno));
+ 		fclose(f);
+ 		return 0;
+ 	}
+ 	if (lseek(fileno(f), 0, SEEK_SET) != 0) {
+-		t_error("lseek: %s\n", strerror(errno));
+ 		fclose(f);
+ 		return 0;
+ 	}
+ 	return f;
+ }
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, fwscanf_test)
+ {
+ 	int i, x, y;
+ 	double u;
+@@ -111,6 +107,4 @@ int main(void)
+ 		TEST(i, feof(f), 0, "%d != %d");
+ 		fclose(f);
+ 	}
+-
+-	return t_status;
+ }
+-- 
+2.25.1
+

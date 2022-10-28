@@ -1,0 +1,60 @@
+From 20b7cb92a5ed671bde8117a3d068a9c6b96edf92 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Tue, 25 Oct 2022 10:01:57 +0300
+Subject: [PATCH] Modify string_strchr source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/string_strchr.c | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
+
+diff --git a/src/functional/string_strchr.c b/src/functional/string_strchr.c
+index 4b1e063..310c243 100644
+--- a/src/functional/string_strchr.c
++++ b/src/functional/string_strchr.c
+@@ -1,5 +1,7 @@
+ #include <string.h>
+-#include "test.h"
++#include <stdint.h>
++#include <unistd.h>
++#include <uk/test.h>
+ 
+ static char buf[512];
+ 
+@@ -18,8 +20,7 @@ static void *aligncpy(void *p, size_t len, size_t a)
+ 	for (align=0; align<8; align++) { \
+ 		char *p = aligncpy(s, sizeof s, align); \
+ 		char *q = strchr(p, c); \
+-		if (q) \
+-			t_error("strchr(%s,%s) with align=%d returned str+%d, wanted 0\n", #s, #c, align, q-p); \
++		UK_TEST_EXPECT_NULL(q); \
+ 	} \
+ }
+ 
+@@ -28,14 +29,12 @@ static void *aligncpy(void *p, size_t len, size_t a)
+ 	for (align=0; align<8; align++) { \
+ 		char *p = aligncpy(s, sizeof s, align); \
+ 		char *q = strchr(p, c); \
+-		if (q == 0) \
+-			t_error("strchr(%s,%s) with align=%d returned 0, wanted str+%d\n", #s, #c, align, n); \
+-		else if (q - p != n) \
+-			t_error("strchr(%s,%s) with align=%d returned str+%d, wanted str+%d\n", #s, #c, align, q-p, n); \
++		UK_TEST_EXPECT_NOT_NULL(q); \
++		UK_TEST_ASSERT((q - p == n)); \
+ 	} \
+ }
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, string_strchr_tests)
+ {
+ 	int i;
+ 	char a[128];
+@@ -74,5 +73,4 @@ int main(void)
+ 	T(s, 255, 254)
+ 	T(s, 0, 255)
+ 
+-	return t_status;
+ }
+-- 
+2.25.1
+

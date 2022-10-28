@@ -1,0 +1,81 @@
+From 1be0f43f2fda37c8d542c8095aff0c1475576add Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Sun, 23 Oct 2022 23:26:19 +0300
+Subject: [PATCH] Modify random source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/random.c | 27 ++++++++++++---------------
+ 1 file changed, 12 insertions(+), 15 deletions(-)
+
+diff --git a/src/functional/random.c b/src/functional/random.c
+index 69596fb..881b1fa 100644
+--- a/src/functional/random.c
++++ b/src/functional/random.c
+@@ -1,7 +1,7 @@
+ #define _XOPEN_SOURCE 700
+ #include <stdio.h>
+ #include <stdlib.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ /* naive statistical checks */
+ 
+@@ -40,21 +40,22 @@ static int chkones(long *x)
+ 	return orx != 0x7fffffff;
+ }
+ 
+-void checkseed(unsigned seed, long *x)
++int checkseed(unsigned seed, long *x)
+ {
+ 	int i;
+ 	srandom(seed);
+ 	for (i = 0; i < 100; i++)
+ 		x[i] = random();
+ 	if (chkmissing(x))
+-		t_error("weak seed %d, missing pattern in low bits\n", seed);
++		return -1;
+ 	if (chkrepeat(x))
+-		t_error("weak seed %d, exact repeats\n", seed);
++		return -2;
+ 	if (chkones(x))
+-		t_error("weak seed %d, or pattern: 0x%08x\n", seed, orx);
++		return -3;
++	return 0;
+ }
+ 
+-int main()
++UK_TESTCASE(uk_libc_testsuite, random_test)
+ {
+ 	long x[100];
+ 	long y,z;
+@@ -67,21 +68,17 @@ int main()
+ 		x[i] = random();
+ 	p = initstate(1, state, sizeof state);
+ 	for (i = 0; i < 100; i++)
+-		if (x[i] != (y = random()))
+-			t_error("initstate(1) is not default: (%d) default: %ld, seed1: %ld\n", i, x[i], y);
++		UK_TEST_ASSERT((x[i] == (y = random())));
+ 	for (i = 0; i < 10; i++) {
+ 		z = random();
+ 		q = setstate(p);
+-		if (z != (y = random()))
+-			t_error("setstate failed (%d) orig: %ld, reset: %ld\n", i, z, y);
++		UK_TEST_ASSERT((z == (y = random())));
+ 		p = setstate(q);
+ 	}
+ 	srandom(1);
+ 	for (i = 0; i < 100; i++)
+-		if (x[i] != (y = random()))
+-			t_error("srandom(1) is not default: (%d) default: %ld, seed1: %ld\n", i, x[i], y);
+-	checkseed(0x7fffffff, x);
++		UK_TEST_ASSERT((x[i] == (y = random())));
++	UK_TEST_EXPECT_ZERO(checkseed(0x7fffffff, x));
+ 	for (i = 0; i < 10; i++)
+-		checkseed(i, x);
+-	return t_status;
++		UK_TEST_EXPECT_ZERO(checkseed(i, x));
+ }
+-- 
+2.25.1
+

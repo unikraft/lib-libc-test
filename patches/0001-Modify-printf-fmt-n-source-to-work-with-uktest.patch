@@ -1,0 +1,45 @@
+From db84ada5cc5432a22e6a17e1731d9d89f241b427 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 28 Oct 2022 00:33:57 +0300
+Subject: [PATCH] Modify printf-fmt-n source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/printf-fmt-n.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
+
+diff --git a/src/regression/printf-fmt-n.c b/src/regression/printf-fmt-n.c
+index 4d1c572..bed4739 100644
+--- a/src/regression/printf-fmt-n.c
++++ b/src/regression/printf-fmt-n.c
+@@ -3,16 +3,14 @@
+ // printf %n fmt
+ #include <stdint.h>
+ #include <stdio.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ #define T(n,nfmt,fmt) do { \
+-	if ((ret = sprintf(buf, "%256d%d" nfmt "%d", 1, 2, &n, 3)) != 258) \
+-		t_error("expexted sprintf to write 258 chars, got %d\n", ret); \
+-	if (n != 257) \
+-		t_error("%%n format failed: wanted 257, got " fmt "\n", n); \
++	UK_TEST_ASSERT(((ret = sprintf(buf, "%256d%d" nfmt "%d", 1, 2, &n, 3)) == 258)); \
++	UK_TEST_ASSERT(n == 257); \
+ } while(0)
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, printf_fmt_n_tests)
+ {
+ 	char buf[1024];
+ 	int ret;
+@@ -29,6 +27,4 @@ int main(void)
+ 	T(h,   "%hn",   "%d");
+ 	T(z,   "%zn",  "%zd");
+ 	T(j,   "%jn",  "%jd");
+-
+-	return t_status;
+ }
+-- 
+2.25.1
+

@@ -1,0 +1,45 @@
+From cedf1265c0a34919a6615f36ec72a2a869dc2c1b Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Tue, 25 Oct 2022 11:08:06 +0300
+Subject: [PATCH] Modify strtof source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/strtof.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/src/functional/strtof.c b/src/functional/strtof.c
+index a998bea..3d394af 100644
+--- a/src/functional/strtof.c
++++ b/src/functional/strtof.c
+@@ -1,7 +1,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <math.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ #define length(x) (sizeof(x) / sizeof *(x))
+ 
+@@ -27,7 +27,7 @@ static struct {
+ 	{"340282356779733661637539395458142568448", INFINITY},
+ };
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, strtof_tests)
+ {
+ 	int i;
+ 	float x;
+@@ -35,8 +35,6 @@ int main(void)
+ 
+ 	for (i = 0; i < length(t); i++) {
+ 		x = strtof(t[i].s, &p);
+-		if (x != t[i].f)
+-			t_error("strtof(\"%s\") want %a got %a\n", t[i].s, t[i].f, x);
++		UK_TEST_ASSERT(x == t[i].f);
+ 	}
+-	return t_status;
+ }
+-- 
+2.25.1
+

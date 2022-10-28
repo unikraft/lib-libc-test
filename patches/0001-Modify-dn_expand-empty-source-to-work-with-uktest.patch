@@ -1,0 +1,42 @@
+From 9f85637837ab6f21235ae66fab16a812b8a1f0ac Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Wed, 26 Oct 2022 22:28:45 +0300
+Subject: [PATCH] Modify dn_expand-empty source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/dn_expand-empty.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
+
+diff --git a/src/regression/dn_expand-empty.c b/src/regression/dn_expand-empty.c
+index 2afe634..8d1e912 100644
+--- a/src/regression/dn_expand-empty.c
++++ b/src/regression/dn_expand-empty.c
+@@ -2,9 +2,9 @@
+ #define _DEFAULT_SOURCE 1
+ #define _BSD_SOURCE 1
+ #include <resolv.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, dn_expand_empty_tests)
+ {
+ 	unsigned char packet[] = "";
+ 	char name[] = "XX";
+@@ -12,10 +12,6 @@ int main(void)
+ 
+ 	/* empty name in packet */
+ 	r = dn_expand(packet, packet+1, packet, name, 1);
+-	if (r!=1)
+-		t_error("dn_expand(\"\", name, 1) returned %d, wanted 1\n", r);
+-	if (name[0])
+-		t_error("dn_expand(\"\", name, 1) failed: got \"%s\" name, wanted \"\"\n", name);
+-
+-	return t_status;
++	UK_TEST_ASSERT(r == 1);
++	UK_TEST_ASSERT(name[0] == '\0');
+ }
+-- 
+2.25.1
+

@@ -1,0 +1,100 @@
+From 0a435b964ff96f21f33ebad0e98e6e7a66283659 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Mon, 24 Oct 2022 22:35:47 +0300
+Subject: [PATCH] Modify sem_init source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/sem_init.c | 40 +++++++++++++++------------------------
+ 1 file changed, 15 insertions(+), 25 deletions(-)
+
+diff --git a/src/functional/sem_init.c b/src/functional/sem_init.c
+index 0d30f02..cb3a004 100644
+--- a/src/functional/sem_init.c
++++ b/src/functional/sem_init.c
+@@ -4,23 +4,23 @@
+ #include <time.h>
+ #include <string.h>
+ #include <errno.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-#define T(f) if(f) t_error(#f" failed: %s\n", strerror(errno))
+-#define T2(r,f) if((r=(f))) t_error(#f" failed: %s\n", strerror(r))
++#define T(f) UK_TEST_EXPECT_ZERO(f)
++#define T2(r,f) UK_TEST_EXPECT_ZERO((r=(f)))
+ 
+ static void *start(void *arg)
+ {
+ 	struct timespec ts;
+ 	sem_t *s = arg;
+-	T(clock_gettime(CLOCK_REALTIME, &ts));
++	clock_gettime(CLOCK_REALTIME, &ts);
+ 	ts.tv_sec += 1;
+-	T(sem_post(s));
+-	T(sem_timedwait(s+1, &ts));
++	sem_post(s);
++	sem_timedwait(s+1, &ts);
+ 	return 0;
+ }
+ 
+-static void many_waiters()
++UK_TESTCASE(uk_libc_testsuite, sem_init_many_waiters_tests)
+ {
+ 	pthread_t t[3];
+ 	sem_t s[2];
+@@ -36,8 +36,7 @@ static void many_waiters()
+ 	T(sem_wait(s));
+ 	T(sem_wait(s));
+ 	T(sem_getvalue(s, &r));
+-	if (r)
+-		t_error("sem value should be 0, got %d\n", r);
++	UK_TEST_EXPECT_ZERO(r);
+ 	T(sem_post(s+1));
+ 	T(sem_post(s+1));
+ 	T(sem_post(s+1));
+@@ -45,13 +44,12 @@ static void many_waiters()
+ 	T2(r,pthread_join(t[1],&p));
+ 	T2(r,pthread_join(t[2],&p));
+ 	T(sem_getvalue(s+1, &r));
+-	if (r)
+-		t_error("sem value should be 0, got %d\n", r);
++	UK_TEST_EXPECT_ZERO(r);
+ 	T(sem_destroy(s));
+ 	T(sem_destroy(s+1));
+ }
+ 
+-static void single_thread()
++UK_TESTCASE(uk_libc_testsuite, sem_init_single_thread_tests)
+ {
+ 	struct timespec ts;
+ 	sem_t s;
+@@ -60,20 +58,12 @@ static void single_thread()
+ 	T(sem_init(&s, 0, 1));
+ 	T(sem_wait(&s));
+ 	T(sem_getvalue(&s, &r));
+-	if (r)
+-		t_error("sem value should be 0, got %d\n", r);
+-	if (sem_trywait(&s) != -1 || errno != EAGAIN)
+-		t_error("sem_trywait should fail with EAGAIN, got %s\n", strerror(errno));
++
++	UK_TEST_EXPECT_ZERO(r);
++	UK_TEST_ASSERT(!(sem_trywait(&s) != -1 || errno != EAGAIN));
++
+ 	errno = 0;
+ 	T(clock_gettime(CLOCK_REALTIME, &ts));
+-	if (sem_timedwait(&s, &ts)!=-1 || errno != ETIMEDOUT)
+-		t_error("sem_timedwait should fail with ETIMEDOUT, got %s\n", strerror(errno));
++	UK_TEST_ASSERT(!(sem_timedwait(&s, &ts)!=-1 || errno != ETIMEDOUT));
+ 	T(sem_destroy(&s));
+ }
+-
+-int main(void)
+-{
+-	single_thread();
+-	many_waiters();
+-	return t_status;
+-}
+-- 
+2.25.1
+

@@ -1,0 +1,43 @@
+From cceeb6878dd0f89a431744e780219c221fd4f4cb Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 27 Oct 2022 14:26:22 +0300
+Subject: [PATCH] Modify inet_ntop-v4mapped source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/inet_ntop-v4mapped.c | 16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
+
+diff --git a/src/regression/inet_ntop-v4mapped.c b/src/regression/inet_ntop-v4mapped.c
+index cd9023c..2d19f00 100644
+--- a/src/regression/inet_ntop-v4mapped.c
++++ b/src/regression/inet_ntop-v4mapped.c
+@@ -2,20 +2,14 @@
+ // inet_ntop should use ipv4 notation for v4mapped addresses
+ #include <string.h>
+ #include <arpa/inet.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, inet_ntop_v4mapped_tests)
+ {
+ 	char *expect = "::ffff:192.168.0.1";
+ 	char buf[100];
+ 	char addr[16];
+-	if (inet_pton(AF_INET6, expect, addr) == 1) {
+-		if (!inet_ntop(AF_INET6, addr, buf, sizeof buf))
+-			t_error("inet_ntop failed\n");
+-		else if (!strchr(buf, '.'))
+-			t_error("inet_ntop produced %s instead of %s\n", buf, expect);
+-	} else {
+-		t_error("inet_pton failed\n");
+-	}
+-	return t_status;
++	UK_TEST_ASSERT(inet_pton(AF_INET6, expect, addr) == 1);
++	UK_TEST_EXPECT_NOT_NULL(inet_ntop(AF_INET6, addr, buf, sizeof buf));
++	UK_TEST_EXPECT_NOT_NULL(strchr(buf, '.'));
+ }
+-- 
+2.25.1
+

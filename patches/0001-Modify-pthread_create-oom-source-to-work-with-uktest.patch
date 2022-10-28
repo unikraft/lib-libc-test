@@ -1,0 +1,46 @@
+From 91e82047e223983182d8bec7fc90b9258c304f51 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 28 Oct 2022 10:00:09 +0300
+Subject: [PATCH] Modify pthread_create-oom source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/pthread_create-oom.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
+
+diff --git a/src/regression/pthread_create-oom.c b/src/regression/pthread_create-oom.c
+index c52a914..815af18 100644
+--- a/src/regression/pthread_create-oom.c
++++ b/src/regression/pthread_create-oom.c
+@@ -4,24 +4,19 @@
+ #include <errno.h>
+ #include <string.h>
+ #include "test.h"
++#include <uk/test.h>
+ 
+ static void *start(void *arg)
+ {
+ 	return 0;
+ }
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, pthread_create_oom_tests)
+ {
+ 	pthread_t td;
+ 	int r, arg;
+ 
+-	if (t_memfill() < 0)
+-		t_error("memfill failed\n");
++	UK_TEST_ASSERT(t_memfill() < 0);
+ 	r = pthread_create(&td, 0, start, &arg);
+-	if (r == 0)
+-		t_error("pthread_create succeeded\n");
+-	else if (r != EAGAIN)
+-		t_error("pthread_create should fail with EAGAIN but failed with %d (%s)\n", r, strerror(r));
+-
+-	return t_status;
++	UK_TEST_ASSERT(r == EAGAIN);
+ }
+-- 
+2.25.1
+

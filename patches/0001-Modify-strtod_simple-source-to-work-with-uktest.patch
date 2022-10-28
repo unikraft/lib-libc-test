@@ -1,0 +1,47 @@
+From b01050caedd32d61e087c254312c463ad8cec335 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Tue, 25 Oct 2022 11:04:21 +0300
+Subject: [PATCH] Modify strtod_simple source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/strtod_simple.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/src/functional/strtod_simple.c b/src/functional/strtod_simple.c
+index 53cf93e..c20d436 100644
+--- a/src/functional/strtod_simple.c
++++ b/src/functional/strtod_simple.c
+@@ -1,7 +1,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <math.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ /* r = place to store result
+  * f = function call to test (or any expression)
+@@ -9,11 +9,9 @@
+  * m = message to print on failure (with formats for r & x)
+  */
+ 
+-#define TEST(r, f, x, m) ( \
+-	((r) = (f)) == (x) || \
+-	(t_error("%s failed (" m ")\n", #f, r, x, r-x), 0) )
++#define TEST(r, f, x, m) UK_TEST_ASSERT((((r) = (f)) == (x)))
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, strtod_simple_tests)
+ {
+ 	int i;
+ 	double d, d2;
+@@ -27,6 +25,5 @@ int main(void)
+ 
+ 	TEST(d, strtod("0x1p4", 0), 16.0, "hex float %a != %a");
+ 	TEST(d, strtod("0x1.1p4", 0), 17.0, "hex float %a != %a");
+-	return t_status;
+ }
+ 
+-- 
+2.25.1
+

@@ -1,0 +1,35 @@
+From 331bf6f08ebdc97b944d61bb1714e83a3a36f567 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 28 Oct 2022 18:17:25 +0300
+Subject: [PATCH] Modify setvbuf-unget source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/setvbuf-unget.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/src/regression/setvbuf-unget.c b/src/regression/setvbuf-unget.c
+index 8667675..6ed1866 100644
+--- a/src/regression/setvbuf-unget.c
++++ b/src/regression/setvbuf-unget.c
+@@ -2,14 +2,12 @@
+ // ungetc after setvbuf should not clobber memory below buffer
+ #include <stdio.h>
+ #include <string.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, setvbuf_unget_tests)
+ {
+ 	char buf[1024] = "hello world";
+ 	setvbuf(stdin, buf+12, _IOFBF, sizeof buf - 12);
+ 	while (ungetc('x', stdin)!=EOF);
+-	if (strcmp(buf, "hello world"))
+-		t_error("ungetc clobbered outside buffer: [%.12s]\n", buf);
+-	return t_status;
++	UK_TEST_EXPECT_ZERO(strcmp(buf, "hello world"));
+ }
+-- 
+2.25.1
+

@@ -1,0 +1,49 @@
+From 5625b196666a71f07ba0190defeb2f91b1297b36 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 28 Oct 2022 18:40:25 +0300
+Subject: [PATCH] Modify sigprocmask-internal source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/sigprocmask-internal.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
+
+diff --git a/src/regression/sigprocmask-internal.c b/src/regression/sigprocmask-internal.c
+index 57b5c40..1cc9f84 100644
+--- a/src/regression/sigprocmask-internal.c
++++ b/src/regression/sigprocmask-internal.c
+@@ -5,9 +5,9 @@
+ #include <signal.h>
+ #include <string.h>
+ #include <errno.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, sigprocmask_internal_tests)
+ {
+ 	sigset_t s;
+ 	int i;
+@@ -15,15 +15,10 @@ int main(void)
+ 	sigemptyset(&s);
+ 	for (i = 32; i < SIGRTMIN; i++) {
+ 		sigaddset(&s, i);
+-		if (sigismember(&s, i) == 1)
+-			t_error("sigaddset(&s, %d) set implementation internal rt signal\n", i);
++		UK_TEST_ASSERT((sigismember(&s, i) != 1));
+ 	}
+-	if (sigprocmask(SIG_BLOCK, &s, 0))
+-		t_error("blocking signals failed: %s\n", strerror(errno));
+-	if (sigprocmask(SIG_BLOCK, 0, &s))
+-		t_error("querying sigmask failed: %s\n", strerror(errno));
++	UK_TEST_EXPECT_ZERO((sigprocmask(SIG_BLOCK, &s, 0)));
++	UK_TEST_EXPECT_ZERO((sigprocmask(SIG_BLOCK, 0, &s)));
+ 	for (i = 32; i < SIGRTMIN; i++)
+-		if (sigismember(&s, i) == 1)
+-			t_error("implementation internal rt signal %d can be blocked\n", i);
+-	return t_status;
++		UK_TEST_ASSERT((sigismember(&s, i) != 1));
+ }
+-- 
+2.25.1
+

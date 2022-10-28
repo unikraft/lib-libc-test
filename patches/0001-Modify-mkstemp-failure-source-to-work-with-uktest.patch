@@ -1,0 +1,49 @@
+From 80896d29beb0dcdd07028ae342553d310acc4fa9 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 28 Oct 2022 00:08:07 +0300
+Subject: [PATCH] Modify mkstemp-failure source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/mkstemp-failure.c | 18 +++++++-----------
+ 1 file changed, 7 insertions(+), 11 deletions(-)
+
+diff --git a/src/regression/mkstemp-failure.c b/src/regression/mkstemp-failure.c
+index 5afec5f..3ccd18d 100644
+--- a/src/regression/mkstemp-failure.c
++++ b/src/regression/mkstemp-failure.c
+@@ -6,24 +6,20 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <errno.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ int mkstemp(char *);
+ 
+-#define S "/dev/null/fooXXXX"
++#define S "/fooXXXX"
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, mkstemp_failure_tests)
+ {
+ 	char p[] = S;
+ 	int r;
+ 
+ 	r = mkstemp(p);
+-	if (r != -1)
+-		t_error("mkstemp(" S ") did not fail\n");
+-	if (memcmp(p, S, sizeof p) != 0)
+-		t_error("mkstemp(" S ") modified the template: %s\n", p);
+-	if (r == -1 && errno != EINVAL)
+-		t_error("mkstemp(" S ") failed with %d [%s] instead of %d [%s]\n",
+-			errno, strerror(errno), EINVAL, strerror(EINVAL));
+-	return t_status;
++	UK_TEST_ASSERT(r == -1);
++	UK_TEST_EXPECT_ZERO(memcmp(p, S, sizeof p));
++	UK_TEST_ASSERT(!(r == -1 && errno != EINVAL));
++	
+ }
+-- 
+2.25.1
+

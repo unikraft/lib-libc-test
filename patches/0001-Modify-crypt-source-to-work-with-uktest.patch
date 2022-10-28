@@ -1,0 +1,43 @@
+From 74bae6e97b72b60f79703c9cf7e974130a615aa2 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Sat, 22 Oct 2022 18:27:21 +0300
+Subject: [PATCH] Modify crypt source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/crypt.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/src/functional/crypt.c b/src/functional/crypt.c
+index 9629651..8138c0a 100644
+--- a/src/functional/crypt.c
++++ b/src/functional/crypt.c
+@@ -1,14 +1,14 @@
+ #include <string.h>
+ #include <crypt.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ static char *p;
+ 
+ #define T(h,s,k) p = crypt(k,s); \
+  if (!p) p ="*"; \
+- if (strcmp(p,h)!=0) t_error("crypt(%s, \"%s\") failed: got \"%s\" want \"%s\"\n", #k, s, p, h);
++ UK_TEST_EXPECT_ZERO(strcmp(p,h));
+ 
+-int main()
++UK_TESTCASE(uk_libc_testsuite, crypt_tests)
+ {
+ 
+ /* md5 */
+@@ -104,6 +104,5 @@ T("$6$rounds=1000$roundstoolow$kUMsbe306n21p9R.FRkW3IGn.S9NPN0x50YhH1xhLsPuWGsUS
+ //T("$6$rounds=123456$asaltof16chars..$BtCwjqMJGx5hrJhZywWvt0RLE8uZ4oPwcelCjmw2kSYu.Ec6ycULevoBK25fs2xXgMNrCzIMVcgEJAstJeonj1",
+ //	"$6$rounds=123456$asaltof16chars..", "a short string")
+ 
+-return t_status;
+-}
+ 
++}
+-- 
+2.25.1
+

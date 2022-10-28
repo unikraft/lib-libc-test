@@ -1,0 +1,59 @@
+From 12caf8658369426733993478b02ae5406ed44743 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Tue, 25 Oct 2022 12:45:53 +0300
+Subject: [PATCH] Modify ungetc source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/ungetc.c | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
+
+diff --git a/src/functional/ungetc.c b/src/functional/ungetc.c
+index 97bc3c6..8b2e263 100644
+--- a/src/functional/ungetc.c
++++ b/src/functional/ungetc.c
+@@ -3,25 +3,25 @@
+ #include <errno.h>
+ #include <limits.h>
+ #include <unistd.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-#define TEST(r, f, x, m) ( \
+-	errno = 0, ((r) = (f)) == (x) || \
+-	(t_error("%s failed (" m ")\n", #f, r, x, strerror(errno)), 0) )
++#define TEST(r, f, x, m) ({ \
++	errno = 0; UK_TEST_ASSERT((((r) = (f)) == (x))); \
++	})
+ 
+-#define TEST_S(s, x, m) ( \
+-	!strcmp((s),(x)) || \
+-	(t_error("[%s] != [%s] (%s)\n", s, x, m), 0) )
++#define TEST_S(s, x, m) ({ \
++	UK_TEST_EXPECT_ZERO(strcmp((s),(x))); \
++	})
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, ungetc_tests)
+ {
+ 	int i;
+ 	char a[100];
+ 	FILE *f;
+ 
+-	TEST(i, !(f = tmpfile()), 0, "failed to create temp file %d!=%d (%s)");
++	TEST(i, !(f = __tmpfile_modified()), 0, "failed to create temp file %d!=%d (%s)");
+ 
+-	if (!f) return t_status;
++	if (!f) return;
+ 
+ 	TEST(i, fprintf(f, "hello, world\n"), 13, "%d != %d (%m)");
+ 	TEST(i, fseek(f, 0, SEEK_SET), 0, "%d != %d (%m)");
+@@ -49,5 +49,4 @@ int main(void)
+ 	TEST(i, fgetc(f), 'h', "'%c' != '%c'");
+ 
+ 	fclose(f);
+-	return t_status;
+ }
+-- 
+2.25.1
+

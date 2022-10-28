@@ -1,0 +1,57 @@
+From 4f865f693de039b59e6a337e4ccfd9f36fbe6952 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Sat, 22 Oct 2022 23:36:38 +0300
+Subject: [PATCH] Modify fdopen source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/fdopen.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
+
+diff --git a/src/functional/fdopen.c b/src/functional/fdopen.c
+index 88f7561..be0ce17 100644
+--- a/src/functional/fdopen.c
++++ b/src/functional/fdopen.c
+@@ -3,33 +3,27 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <unistd.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-#define TEST(c) do { \
+-	errno = 0; \
+-	if (!(c)) \
+-		t_error("%s failed (errno = %d)\n", #c, errno); \
+-} while(0)
++#define TEST(c) UK_TEST_ASSERT((c))
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, fdopen_tests)
+ {
+-	char tmp[] = "/tmp/testsuite-XXXXXX";
++	char tmp[] = "/testsuite-XXXXXX";
+ 	char foo[6];
+ 	int fd;
+ 	FILE *f;
+ 
+ 	TEST((fd = mkstemp(tmp)) > 2);
+ 	TEST(write(fd, "hello", 6)==6);
+-	TEST(f = fdopen(fd, "rb"));
++	TEST((f = fdopen(fd, "rb")) != NULL);
+ 	if (f) {
+ 		TEST(ftello(f)==6);
+ 		TEST(fseeko(f, 0, SEEK_SET)==0);
+ 		TEST(fgets(foo, sizeof foo, f));
+-		if (strcmp(foo,"hello") != 0)
+-			t_error("fgets read back: \"%s\"; wanted: \"hello\"\n", foo);
++		TEST(!strcmp(foo,"hello") != 0);
+ 		fclose(f);
+ 	}
+ 	if (fd > 2)
+ 		TEST(unlink(tmp) != -1);
+-	return t_status;
+ }
+-- 
+2.25.1
+
