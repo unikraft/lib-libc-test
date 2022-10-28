@@ -1,0 +1,54 @@
+From 7a684076de4ac63d9e835c5225e0eb4403df68ae Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 27 Oct 2022 10:13:36 +0300
+Subject: [PATCH] Modify fgetwc-buffering source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/fgetwc-buffering.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
+
+diff --git a/src/regression/fgetwc-buffering.c b/src/regression/fgetwc-buffering.c
+index dc0a13d..cc5c304 100644
+--- a/src/regression/fgetwc-buffering.c
++++ b/src/regression/fgetwc-buffering.c
+@@ -6,12 +6,13 @@
+ #include <errno.h>
+ #include <string.h>
+ #include "test.h"
++#include <uk/test.h>
+ 
+-#define A(c) do { if (!(c)) t_error(#c" failed\n"); } while(0)
++#define A(c) UK_TEST_ASSERT((c))
+ 
+-int main()
++UK_TESTCASE(uk_libc_testsuite, fgetwc_buffering_tests)
+ {
+-	t_setutf8();
++	UK_TEST_EXPECT_ZERO(t_setutf8());
+ 
+ 	int p[2];
+ 	A(pipe(p) == 0);
+@@ -24,16 +25,12 @@ int main()
+ 	close(p[1]);
+ 
+ 	wc = fgetwc(stdin);
+-	if (wc != 0x800)
+-		t_error("wanted 0x800, got 0x%x\n", (unsigned)wc);
++	UK_TEST_ASSERT(wc == 0x800);
+ 
+ 	errno = 0;
+ 	wc = fgetwc(stdin);
+-	if (wc != WEOF)
+-		t_error("wanted WEOF, got 0x%x\n", (unsigned)wc);
+-	if (errno != 0)
+-		t_error("wanted errno==0, got %d (%s)\n", errno, strerror(errno));
++	UK_TEST_ASSERT(wc == WEOF);
++	UK_TEST_ASSERT(errno == 0);
+ 	A(feof(stdin)!=0);
+ 	A(ferror(stdin)==0);
+-	return t_status;
+ }
+-- 
+2.25.1
+

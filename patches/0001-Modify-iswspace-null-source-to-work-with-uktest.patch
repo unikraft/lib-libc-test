@@ -1,0 +1,32 @@
+From d70399fa226d5ab613fdc280461221a08bde39d8 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 27 Oct 2022 14:41:29 +0300
+Subject: [PATCH] Modify iswspace-null source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/iswspace-null.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/src/regression/iswspace-null.c b/src/regression/iswspace-null.c
+index 4afb89b..fcf5f72 100644
+--- a/src/regression/iswspace-null.c
++++ b/src/regression/iswspace-null.c
+@@ -1,11 +1,9 @@
+ // commit: d8e8f1464cb02d6a62f01c7153ca4d7b0cd5c5e6 2013-11-11
+ // iswspace(0) should be 0
+ #include <wctype.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, iswspace_null_tests)
+ {
+-	if (iswspace(0)!=0)
+-		t_error("iswspace(0) returned non-zero\n");
+-	return t_status;
++	UK_TEST_EXPECT_ZERO(iswspace(0));
+ }
+-- 
+2.25.1
+

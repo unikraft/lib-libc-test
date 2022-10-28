@@ -1,60 +1,89 @@
-From 0f568ec7f64a2b80f8f5579e77e1adc0deeaa9b6 Mon Sep 17 00:00:00 2001
+From 110ef96b162c3a4f90b5f8ef49e65465cd5e42ba Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Sun, 9 Oct 2022 23:06:29 +0300
+Date: Sun, 23 Oct 2022 20:34:15 +0300
 Subject: [PATCH] Modify memstream source to work with uktest
 
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
 ---
- src/functional/memstream.c | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ src/functional/memstream.c | 28 ++++++++++------------------
+ 1 file changed, 10 insertions(+), 18 deletions(-)
 
 diff --git a/src/functional/memstream.c b/src/functional/memstream.c
-index 0eef3cc..bcf1b71 100644
+index 0eef3cc..9e74e6d 100644
 --- a/src/functional/memstream.c
 +++ b/src/functional/memstream.c
-@@ -3,24 +3,24 @@
+@@ -3,24 +3,17 @@
  #include <stdio.h>
  #include <errno.h>
  #include <string.h>
 -#include "test.h"
-+#include <uk/test.h>//#include "test.h"
++#include <uk/test.h>
  
 -#define TEST(r, f, x, m) ( \
 -((r) = (f)) == (x) || \
 -(t_error("%s failed (" m ")\n", #f, r, x), 0) )
-+#define TEST(r, f, x, m) UK_TEST_EXPECT_SNUM_EQ(((r) = (f)), (x))//( 
-+//((r) = (f)) == (x) || 
-+//(t_error("%s failed (" m ")\n", #f, r, x), 0) )
++#define TEST(r, f, x, m) UK_TEST_EXPECT_SNUM_EQ(((r) = (f)), (x))
  
 -#define TEST_E(f) ( (errno = 0), (f) || \
 -(t_error("%s failed (errno = %d)\n", #f, errno), 0) )
-+#define TEST_E(f) UK_TEST_ASSERT((f))//( (errno = 0), (f) || 
-+//(t_error("%s failed (errno = %d)\n", #f, errno), 0) )
++#define TEST_E(f) UK_TEST_ASSERT((f))
  
 -#define TEST_S(s, x, m) ( \
 -!strcmp((s),(x)) || \
 -(t_error("[%s] != [%s] (%s)\n", s, x, m), 0) )
-+#define TEST_S(s, x, m) UK_TEST_EXPECT_ZERO(strcmp((s),(x)))//( 
-+//!strcmp((s),(x)) || 
-+//(t_error("[%s] != [%s] (%s)\n", s, x, m), 0) )
++#define TEST_S(s, x, m) UK_TEST_EXPECT_ZERO(strcmp((s),(x)))
  
 -#define TEST_M(s, x, n, m) ( \
 -!memcmp((s),(x),(n)) || \
 -(t_error("[%s] != [%s] (%s)\n", s, x, m), 0) )
-+#define TEST_M(s, x, n, m) UK_TEST_EXPECT_ZERO(memcmp((s),(x),(n)))//( 
-+//!memcmp((s),(x),(n)) || 
-+//(t_error("[%s] != [%s] (%s)\n", s, x, m), 0) )
++#define TEST_M(s, x, n, m) UK_TEST_EXPECT_ZERO(memcmp((s),(x),(n)))
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, memstream_tests)//int main(void)
++UK_TESTCASE(uk_libc_testsuite, memstream_tests)
  {
  	FILE *f;
  	char *s;
-@@ -91,5 +91,5 @@ int main(void)
+@@ -29,7 +22,7 @@ int main(void)
+ 	int i;
+ 
+ 	s = 0;
+-	TEST_E(f = open_memstream(&s, &l));
++	TEST_E((f = open_memstream(&s, &l)) != NULL);
+ 	TEST_E(putc('a', f) == 'a');
+ 	TEST_E(putc('b', f) == 'b');
+ 	TEST_E(putc('c', f) == 'c');
+@@ -39,7 +32,7 @@ int main(void)
+ 	free(s);
+ 
+ 	s = 0;
+-	TEST_E(f = open_memstream(&s, &l));
++	TEST_E((f = open_memstream(&s, &l)) != NULL);
+ 	TEST_E(fseek(f,1,SEEK_CUR)>=0);
+ 	TEST_E(putc('q', f) == 'q');
+ 	TEST_E(!fflush(f));
+@@ -54,7 +47,7 @@ int main(void)
+ 	fclose(f);
+ 	free(s);
+ 
+-	TEST_E(f = fmemopen(buf, 10, "r+"));
++	TEST_E((f = fmemopen(buf, 10, "r+")) != NULL);
+ 	TEST_E(fputs("hello", f) >= 0);
+ 	TEST_E(fputc(0, f)==0);
+ 	TEST_E(fseek(f, 0, SEEK_SET)>=0);
+@@ -69,7 +62,7 @@ int main(void)
+ 	TEST_S(buf, "hello", "");
+ 	fclose(f);
+ 
+-	TEST_E(f = fmemopen(buf, 10, "a+"));
++	TEST_E((f = fmemopen(buf, 10, "a+")) != NULL);
+ 	TEST(i, ftell(f), 5, "%d != %d");
+ 	TEST_E(fseek(f, 0, SEEK_SET)>=0);
+ 	TEST(i, getc(f), 'h', "%d != %d");
+@@ -91,5 +84,4 @@ int main(void)
  	TEST(i, ftell(f), 8, "%d != %d");
  	TEST_S(buf, "hello104", "");
  	fclose(f);
 -	return t_status;
-+//	return t_status;
  }
 -- 
 2.25.1

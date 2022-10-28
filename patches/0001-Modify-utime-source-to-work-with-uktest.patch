@@ -1,0 +1,71 @@
+From 28452ac812356516c7c63920213a6c788e144f00 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Tue, 25 Oct 2022 13:26:58 +0300
+Subject: [PATCH] Modify utime source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/utime.c | 28 +++++++++++++---------------
+ 1 file changed, 13 insertions(+), 15 deletions(-)
+
+diff --git a/src/functional/utime.c b/src/functional/utime.c
+index 7fa7a1f..d2a8ecf 100644
+--- a/src/functional/utime.c
++++ b/src/functional/utime.c
+@@ -6,24 +6,24 @@
+ #include <stdint.h>
+ #include <unistd.h>
+ #include <fcntl.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-#define TEST(c, ...) ((c) ? 1 : (t_error(#c" failed: " __VA_ARGS__),0))
++#define TEST(c, ...) UK_TEST_ASSERT((c))
+ #define TESTVAL(v,op,x) TEST(v op x, "%jd\n", (intmax_t)(v))
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, utime_tests)
+ {
+ 	struct stat st;
+ 	FILE *f;
+-	int fd;
++	int fd, a;
+ 	time_t t;
+ 
+-	TEST(utimensat(AT_FDCWD, "/dev/null/invalid", ((struct timespec[2]){{.tv_nsec=UTIME_OMIT},{.tv_nsec=UTIME_OMIT}}), 0)==0 || errno==ENOTDIR,
++	TEST(utimensat(AT_FDCWD, "/", ((struct timespec[2]){{.tv_nsec=UTIME_OMIT},{.tv_nsec=UTIME_OMIT}}), 0)==0 || errno==ENOTDIR,
+ 		"%s\n", strerror(errno));
+ 	TEST(futimens(-1, ((struct timespec[2]){{.tv_nsec=UTIME_OMIT},{.tv_nsec=UTIME_OMIT}}))==0 || errno==EBADF,
+ 		"%s\n", strerror(errno));
+-
+-	if (!TEST(f = tmpfile())) return t_status;
++	TEST(f = __tmpfile_modified());
++	if (!f) return;
+ 	fd = fileno(f);
+ 
+ 	TEST(futimens(fd, (struct timespec[2]){0}) == 0, "\n");
+@@ -59,15 +59,13 @@ int main(void)
+ 	TESTVAL(st.st_atim.tv_sec,>=,t);
+ 	TESTVAL(st.st_mtim.tv_sec,>=,t);
+ 
+-	if (TEST((time_t)(1LL<<32) == (1LL<<32), "implementation has Y2038 EOL\n")) {
+-		if (TEST(futimens(fd, ((struct timespec[2]){{.tv_sec=1LL<<32},{.tv_sec=1LL<<32}})) == 0, "%s\n", strerror(errno))) {
+-			TEST(fstat(fd, &st) == 0, "\n");
+-			TESTVAL(st.st_atim.tv_sec, ==, 1LL<<32);
+-			TESTVAL(st.st_mtim.tv_sec, ==, 1LL<<32);
+-		}
++	TEST((time_t)(1LL<<32) == (1LL<<32), "implementation has Y2038 EOL\n");
++	TEST((a = futimens(fd, ((struct timespec[2]){{.tv_sec=1LL<<32},{.tv_sec=1LL<<32}}))) == 0, "%s\n", strerror(errno));
++	if (!a) {
++		TEST(fstat(fd, &st) == 0, "\n");
++		TESTVAL(st.st_atim.tv_sec, ==, 1LL<<32);
++		TESTVAL(st.st_mtim.tv_sec, ==, 1LL<<32);
+ 	}
+ 
+ 	fclose(f);
+-
+-	return t_status;
+ }
+-- 
+2.25.1
+

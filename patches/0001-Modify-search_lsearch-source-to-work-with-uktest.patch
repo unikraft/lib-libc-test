@@ -1,0 +1,64 @@
+From 987233aeca918d928b63372f5508bae92b2c91ed Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Mon, 24 Oct 2022 21:11:22 +0300
+Subject: [PATCH] Modify search_lsearch source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/search_lsearch.c | 20 +++++++-------------
+ 1 file changed, 7 insertions(+), 13 deletions(-)
+
+diff --git a/src/functional/search_lsearch.c b/src/functional/search_lsearch.c
+index 711a7a0..d2ae47c 100644
+--- a/src/functional/search_lsearch.c
++++ b/src/functional/search_lsearch.c
+@@ -3,7 +3,7 @@
+ #endif
+ #include <string.h>
+ #include <search.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ #define W 80
+ static char tab[100][W];
+@@ -11,13 +11,12 @@ static size_t nel;
+ 
+ #define set(k) do{ \
+ 	char *r = lsearch(k, tab, &nel, W, (int(*)(const void*,const void*))strcmp); \
+-	if (strcmp(r, k) != 0) \
+-		t_error("lsearch %s failed\n", #k); \
++	UK_TEST_EXPECT_ZERO((strcmp(r, k))); \
+ }while(0)
+ 
+ #define get(k) lfind(k, tab, &nel, W, (int(*)(const void*,const void*))strcmp)
+ 
+-int main()
++UK_TESTCASE(uk_libc_testsuite, search_lsearch_tests)
+ {
+ 	size_t n;
+ 
+@@ -31,17 +30,12 @@ int main()
+ 	set("g");
+ 	set("h");
+ 	set("iiiiiiiiii");
+-	if (!get("a"))
+-		t_error("lfind a failed\n");
+-	if (get("c"))
+-		t_error("lfind c should fail\n");
++	UK_TEST_EXPECT_NOT_NULL(get("a"));
++	UK_TEST_EXPECT_NULL(get("c"));
+ 	n = nel;
+ 	set("g");
+-	if (nel != n)
+-		t_error("lsearch g should not modify the table size (%d, was %d)\n", nel, n);
++	UK_TEST_ASSERT((nel == n));
+ 	n = nel;
+ 	set("j");
+-	if (nel != n+1)
+-		t_error("lsearch j should increase the table size (%d, was %d)\n", nel, n);
+-	return t_status;
++	UK_TEST_ASSERT((nel == n+1));
+ }
+-- 
+2.25.1
+

@@ -1,0 +1,53 @@
+From a10df3b892ba832079d2640b6ec73156d86247e9 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Tue, 25 Oct 2022 14:44:31 +0300
+Subject: [PATCH] Modify wcsstr source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/wcsstr.c | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
+
+diff --git a/src/functional/wcsstr.c b/src/functional/wcsstr.c
+index 73be607..56526c6 100644
+--- a/src/functional/wcsstr.c
++++ b/src/functional/wcsstr.c
+@@ -1,23 +1,20 @@
+ #include <wchar.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ #define N(s, sub) { \
+ 	wchar_t *p = s; \
+ 	wchar_t *q = wcsstr(p, sub); \
+-	if (q) \
+-		t_error("wcsstr(%s,%s) returned str+%d, wanted 0\n", #s, #sub, q-p); \
++	UK_TEST_EXPECT_NULL(q); \
+ }
+ 
+ #define T(s, sub, n) { \
+ 	wchar_t *p = s; \
+ 	wchar_t *q = wcsstr(p, sub); \
+-	if (q == 0) \
+-		t_error("wcsstr(%s,%s) returned 0, wanted str+%d\n", #s, #sub, n); \
+-	else if (q - p != n) \
+-		t_error("wcsstr(%s,%s) returned str+%d, wanted str+%d\n", #s, #sub, q-p, n); \
++	UK_TEST_EXPECT_NOT_NULL(q); \
++	UK_TEST_ASSERT((q - p == n)); \
+ }
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, wcsstr_tests)
+ {
+ 	N(L"", L"a")
+ 	N(L"a", L"aa")
+@@ -53,6 +50,4 @@ int main(void)
+ 	T(L"nanabanabanana", L"anab", 1)
+ 	T(L"nanabanabanana", L"banana", 8)
+ 	T(L"_ _\xff_ _", L"_\xff_", 2)
+-
+-	return t_status;
+ }
+-- 
+2.25.1
+

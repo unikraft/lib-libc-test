@@ -1,0 +1,130 @@
+From f6754b7de93efcebbfb61db0b4c4b07368160c64 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 27 Oct 2022 11:52:18 +0300
+Subject: [PATCH] Modify flockfile-list source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/flockfile-list.c | 52 ++++++++++++++++-----------------
+ 1 file changed, 25 insertions(+), 27 deletions(-)
+
+diff --git a/src/regression/flockfile-list.c b/src/regression/flockfile-list.c
+index a269cb8..fe66318 100644
+--- a/src/regression/flockfile-list.c
++++ b/src/regression/flockfile-list.c
+@@ -4,9 +4,8 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-#define t_fatal(...) (t_error(__VA_ARGS__), _Exit(t_status))
+ #define length(a) (sizeof(a)/sizeof*(a))
+ 
+ // interpose malloc functions
+@@ -21,13 +20,13 @@ static struct {
+ } alloc[100];
+ static int idx;
+ 
+-void *malloc(size_t n)
++void *m_malloc(size_t n)
+ {
+ 	if (n == 0) n++;
+ 	if (n > sizeof buf - pos)
+-		t_fatal("test buffer is small, pos: %zu, need: %zu\n", pos, n);
++		printf("test buffer is small, pos: %zu, need: %zu\n", pos, n);
+ 	if (idx >= length(alloc))
+-		t_fatal("test buffer is small, idx: %d\n", idx);
++		printf("test buffer is small, idx: %d\n", idx);
+ 	void *p = buf + pos;
+ 	alloc[idx].pos = pos;
+ 	alloc[idx].n = n;
+@@ -36,14 +35,14 @@ void *malloc(size_t n)
+ 	return p;
+ }
+ 
+-void *calloc(size_t n, size_t m)
++void *m_calloc(size_t n, size_t m)
+ {
+-	return memset(malloc(n*m), 0, n*m);
++	return memset(m_malloc(n*m), 0, n*m);
+ }
+ 
+ void *aligned_alloc(size_t a, size_t n)
+ {
+-	t_fatal("aligned_alloc is unsupported\n");
++	printf("aligned_alloc is unsupported\n");
+ }
+ 
+ static int findidx(void *p)
+@@ -52,20 +51,20 @@ static int findidx(void *p)
+ 	for (int i=0; i<idx; i++)
+ 		if (alloc[i].pos == pos)
+ 			return i;
+-	t_fatal("%p is not an allocated pointer\n", p);
++	printf("%p is not an allocated pointer\n", p);
+ 	return -1;
+ }
+ 
+-void *realloc(void *p, size_t n)
++void *m_realloc(void *p, size_t n)
+ {
+-	void *q = malloc(n);
++	void *q = m_malloc(n);
+ 	size_t m = alloc[findidx(p)].n;
+ 	memcpy(q, p, m < n ? m : n);
+-	free(p);
++	m_free(p);
+ 	return q;
+ }
+ 
+-void free(void *p)
++void m_free(void *p)
+ {
+ 	if (p == 0) return;
+ 	int i = findidx(p);
+@@ -73,21 +72,21 @@ void free(void *p)
+ 	alloc[i].freed = 1;
+ }
+ 
+-static void checkfreed(void)
+-{
+-	for (int i=0; i<idx; i++)
+-		if (alloc[i].freed)
+-			for (size_t j=0; j<alloc[i].n; j++)
+-				if (buf[alloc[i].pos + j] != 42) {
+-					t_error("freed allocation %d (pos: %zu, len: %zu) is clobbered\n", i, alloc[i].pos, alloc[i].n);
+-					break;
+-				}
+-}
++#define checkfreed(void) \
++({ \
++	for (int i=0; i<idx; i++) \
++		if (alloc[i].freed) \
++			for (size_t j=0; j<alloc[i].n; j++) \
++				if (buf[alloc[i].pos + j] != 42) { \
++					UK_TEST_ASSERT(buf[alloc[i].pos + j] == 42); \
++					break; \
++				} \
++})
+ 
+-int main()
++UK_TESTCASE(uk_libc_testsuite, flockfile_list_tests)
+ {
+-	FILE *f = tmpfile();
+-	FILE *g = tmpfile();
++	FILE *f = __tmpfile_modified();
++	FILE *g = __tmpfile_modified();
+ 	flockfile(g);
+ 	flockfile(f);
+ 	funlockfile(g);
+@@ -95,5 +94,4 @@ int main()
+ 	/* may corrupt memory */
+ 	funlockfile(f);
+ 	checkfreed();
+-	return t_status;
+ }
+-- 
+2.25.1
+

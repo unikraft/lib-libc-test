@@ -1,0 +1,36 @@
+From 9a0beaf5ba50aeb9962436799c09f24fabd3ba61 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 27 Oct 2022 12:45:59 +0300
+Subject: [PATCH] Modify getpwnam_r-crash source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/getpwnam_r-crash.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/src/regression/getpwnam_r-crash.c b/src/regression/getpwnam_r-crash.c
+index 1e65b7d..0ebd96a 100644
+--- a/src/regression/getpwnam_r-crash.c
++++ b/src/regression/getpwnam_r-crash.c
+@@ -2,12 +2,14 @@
+ // getpwnam_r should not crash on nonexistant users when errno is 0
+ 
+ #include <pwd.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, getpwnam_r_crash_tests)
+ {
+ 	struct passwd *pw, pwbuf;
+ 	char buf[1024];
+-	getpwnam_r("nonsensical_user", &pwbuf, buf, sizeof buf, &pw);
+-	return t_status;
++	int res;
++	res = getpwnam_r("nonsensical_user", &pwbuf, buf, sizeof buf, &pw);
++	UK_TEST_EXPECT_NOT_ZERO(res);
++	UK_TEST_EXPECT_NULL(pw);
+ }
+-- 
+2.25.1
+

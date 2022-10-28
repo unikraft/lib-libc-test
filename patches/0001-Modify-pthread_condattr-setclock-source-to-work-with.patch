@@ -1,0 +1,72 @@
+From 4a685a57404a1294e20d329d32aef45b21a0b698 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 28 Oct 2022 09:36:59 +0300
+Subject: [PATCH] Modify pthread_condattr-setclock source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/pthread_condattr_setclock.c | 23 ++++++++--------------
+ 1 file changed, 8 insertions(+), 15 deletions(-)
+
+diff --git a/src/regression/pthread_condattr_setclock.c b/src/regression/pthread_condattr_setclock.c
+index 1ddc1d2..df7aad3 100644
+--- a/src/regression/pthread_condattr_setclock.c
++++ b/src/regression/pthread_condattr_setclock.c
+@@ -4,11 +4,11 @@
+ #include <time.h>
+ #include <string.h>
+ #include <errno.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-#define T(r,f) if ((r=(f))) t_error(#f " failed: %s\n", strerror(r))
++#define T(r,f) UK_TEST_EXPECT_ZERO((r=(f)))
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, pthread_condattr_setclock_tests)
+ {
+ 	pthread_cond_t c;
+ 	pthread_condattr_t a;
+@@ -20,21 +20,16 @@ int main(void)
+ 
+ 	T(r,pthread_condattr_init(&a));
+ 	r = pthread_condattr_setclock(&a, CLOCK_PROCESS_CPUTIME_ID);
+-	if (r != EINVAL)
+-		t_error("pthread_condattr_setclock CLOCK_PROCESS_CPUTIME_ID should fail with EINVAL, got %s\n", strerror(r));
++	UK_TEST_ASSERT(r == EINVAL);
+ 	r = pthread_condattr_setclock(&a, CLOCK_THREAD_CPUTIME_ID);
+-	if (r != EINVAL)
+-		t_error("pthread_condattr_setclock CLOCK_THREAD_CPUTIME_ID should fail with EINVAL, got %s\n", strerror(r));
++	UK_TEST_ASSERT(r == EINVAL);
+ 	T(r,pthread_condattr_getclock(&a, &clk));
+-	if (clk != CLOCK_REALTIME)
+-		t_error("condattr default clock is %d, wanted CLOCK_REALTIME (%d)\n", (int)clk, (int)CLOCK_REALTIME);
+-
++	UK_TEST_ASSERT(clk == CLOCK_REALTIME);
+ 	T(r,pthread_cond_init(&c, &a));
+ 	T(r,pthread_mutex_init(&m, 0));
+ 	T(r,pthread_mutex_lock(&m));
+ 	r = clock_gettime(CLOCK_REALTIME, &ts);
+-	if (r)
+-		t_error("clock_gettime failed: %s\n", strerror(errno));
++	UK_TEST_EXPECT_ZERO(r);
+ 	/* wait 10ms */
+ 	ts.tv_nsec += 10*1000*1000;
+ 	if (ts.tv_nsec >= 1000*1000*1000) {
+@@ -42,12 +37,10 @@ int main(void)
+ 		ts.tv_sec += 1;
+ 	}
+ 	r = pthread_cond_timedwait(&c, &m, &ts);
+-	if (r != ETIMEDOUT)
+-		t_error("pthread_cond_timedwait did not timeout, returned %s\n", strerror(r));
++	UK_TEST_ASSERT(r == ETIMEDOUT);
+ 	T(r,pthread_mutex_unlock(&m));
+ 
+ 	T(r,pthread_mutex_destroy(&m));
+ 	T(r,pthread_cond_destroy(&c));
+ 	T(r,pthread_condattr_destroy(&a));
+-	return t_status;
+ }
+-- 
+2.25.1
+

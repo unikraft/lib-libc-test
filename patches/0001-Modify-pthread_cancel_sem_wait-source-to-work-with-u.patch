@@ -1,0 +1,48 @@
+From f88bc02da28f44c4bfb46f45f9781cf486c915f8 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 28 Oct 2022 00:55:26 +0300
+Subject: [PATCH] Modify pthread_cancel_sem_wait source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/pthread_cancel-sem_wait.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/src/regression/pthread_cancel-sem_wait.c b/src/regression/pthread_cancel-sem_wait.c
+index 15a5b4c..c10bacd 100644
+--- a/src/regression/pthread_cancel-sem_wait.c
++++ b/src/regression/pthread_cancel-sem_wait.c
+@@ -2,11 +2,10 @@
+ #include <pthread.h>
+ #include <semaphore.h>
+ #include <string.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-#define TESTC(c, m) ( (c) || (t_error("%s failed (" m ")\n", #c), 0) )
+-#define TESTR(r, f, m) ( \
+-	((r) = (f)) == 0 || (t_error("%s failed: %s (" m ")\n", #f, strerror(r)), 0) )
++#define TESTC(c, m) UK_TEST_ASSERT((c))
++#define TESTR(r, f, m) UK_TEST_EXPECT_ZERO(((r) = (f)))
+ 
+ static sem_t sem1, sem2;
+ 
+@@ -36,7 +35,7 @@ static void *start_sem_timedwait(void *arg)
+ 	return 0;
+ }
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, pthread_cancel_sem_wait_tests)
+ {
+ 	pthread_t td;
+ 	int r;
+@@ -83,6 +82,4 @@ int main(void)
+ 	TESTR(r, pthread_join(td, &res), "joining canceled thread after blocking sem_timedwait");
+ 	TESTC(res == PTHREAD_CANCELED, "canceled thread exit status after blocking sem_timedwait");
+ 	TESTC(seqno == 1, "blocking sem_timedwait");
+-
+-	return t_status;
+ }
+-- 
+2.25.1
+

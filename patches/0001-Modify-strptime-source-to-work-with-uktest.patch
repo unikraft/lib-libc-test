@@ -1,0 +1,110 @@
+From 9797463ac7d6a3fc471a27ef7402ac2a29f2a89b Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Tue, 25 Oct 2022 10:36:54 +0300
+Subject: [PATCH] Modify strptime source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/strptime.c | 66 +++++++++++++++++----------------------
+ 1 file changed, 28 insertions(+), 38 deletions(-)
+
+diff --git a/src/functional/strptime.c b/src/functional/strptime.c
+index b5f8977..02651d2 100644
+--- a/src/functional/strptime.c
++++ b/src/functional/strptime.c
+@@ -5,7 +5,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <time.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ /**
+  * checkStrptime - parse time and check if it matches expected value
+@@ -14,41 +14,32 @@
+  * It's because tm_wday and tm_yday may - but don't have to - be set
+  * while parsing a date.
+  */
+-static void checkStrptime(const char *s, const char *format, const struct tm *expected) {
+-	struct tm tm = { };
+-	const char *ret;
+ 
+-	ret = strptime(s, format, &tm);
+-	if (!ret || *ret != '\0') {
+-		t_error("\"%s\": failed to parse \"%s\"\n", format, s);
+-	} else if (tm.tm_sec != expected->tm_sec ||
+-		   tm.tm_min != expected->tm_min ||
+-		   tm.tm_hour != expected->tm_hour ||
+-		   tm.tm_mday != expected->tm_mday ||
+-		   tm.tm_mon != expected->tm_mon ||
+-		   tm.tm_year != expected->tm_year) {
+-		char buf1[64];
+-		char buf2[64];
+-
+-		strftime(buf1, sizeof(buf1), "%FT%H:%M:%S%Z", expected);
+-		strftime(buf2, sizeof(buf2), "%FT%H:%M:%S%Z", &tm);
+-
+-		t_error("\"%s\": for \"%s\" expected %s but got %s\n", format, s, buf1, buf2);
+-	}
+-}
+-
+-static void checkStrptimeTz(const char *s, int h, int m) {
+-	long int expected = h * 3600 + m * 60;
+-	struct tm tm = { };
+-	const char *ret;
+-
+-	ret = strptime(s, "%z", &tm);
+-	if (!ret || *ret != '\0') {
+-		t_error("\"%%z\": failed to parse \"%s\"\n", s);
+-	} else if (tm.tm_gmtoff != expected) {
+-		t_error("\"%%z\": for \"%s\" expected tm_gmtoff %ld but got %ld\n", s, tm.tm_gmtoff, expected);
+-	}
+-}
++#define checkStrptime(s, format, expected) \
++	({ \
++	struct tm tm = { }; \
++	const char *ret; \
++	\
++	ret = strptime(s, format, &tm); \
++	UK_TEST_ASSERT(!(!ret || *ret != '\0')); \
++	UK_TEST_ASSERT(!(tm.tm_sec != expected->tm_sec || \
++		   tm.tm_min != expected->tm_min || \
++		   tm.tm_hour != expected->tm_hour || \
++		   tm.tm_mday != expected->tm_mday || \
++		   tm.tm_mon != expected->tm_mon || \
++		   tm.tm_year != expected->tm_year)); \
++	})
++
++#define checkStrptimeTz(s, h, m) \
++	({ \
++	long int expected = h * 3600 + m * 60; \
++	struct tm tm = { }; \
++	const char *ret; \
++	\
++	ret = strptime(s, "%z", &tm); \
++	UK_TEST_ASSERT(!(!ret || *ret != '\0')); \
++	UK_TEST_ASSERT(tm.tm_gmtoff == expected); \
++	})
+ 
+ static struct tm tm1 = {
+ 	.tm_sec = 8,
+@@ -86,7 +77,8 @@ static struct tm tm4 = {
+ 	.tm_year = 1856 - 1900,
+ };
+ 
+-int main() {
++UK_TESTCASE(uk_libc_testsuite, strptime_tests)
++{
+ 	setenv("TZ", "UTC0", 1);
+ 
+ 	/* Time */
+@@ -113,6 +105,4 @@ int main() {
+ 	checkStrptimeTz("+0200", 2, 0);
+ 	checkStrptimeTz("-0530", -5, -30);
+ 	checkStrptimeTz("-06", -6, 0);
+-
+-	return t_status;
+ }
+-- 
+2.25.1
+

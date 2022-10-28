@@ -1,0 +1,125 @@
+From 6b628ebff79434ee1366a6f74c0f202eb1a2492a Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Mon, 24 Oct 2022 22:13:42 +0300
+Subject: [PATCH] Modify search_tsearch source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/search_tsearch.c | 55 +++++++++++++--------------------
+ 1 file changed, 22 insertions(+), 33 deletions(-)
+
+diff --git a/src/functional/search_tsearch.c b/src/functional/search_tsearch.c
+index df257c6..d10ad9c 100644
+--- a/src/functional/search_tsearch.c
++++ b/src/functional/search_tsearch.c
+@@ -4,7 +4,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <search.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ struct e {
+ 	char *k;
+@@ -28,16 +28,16 @@ static void act(const void *node, VISIT v, int d)
+ 
+ 	if (v == preorder)
+ 		if (e->k[0] < wantc)
+-			t_error("preorder visited node \"%s\" before \"%c\"\n", e->k, wantc);
++			printf("preorder visited node \"%s\" before \"%c\"\n", e->k, wantc);
+ 	if (v == endorder)
+ 		if (e->k[0] > wantc)
+-			t_error("endorder visited node \"%s\" after \"%c\"\n", e->k, wantc);
++			printf("endorder visited node \"%s\" after \"%c\"\n", e->k, wantc);
+ 	if (v == postorder)
+ 		if (e->k[0] != wantc)
+-			t_error("postorder visited node \"%s\", wanted \"%c\"\n", e->k, wantc);
++			printf("postorder visited node \"%s\", wanted \"%c\"\n", e->k, wantc);
+ 	if (v == leaf)
+ 		if (e->k[0] != wantc)
+-			t_error("visited leaf node \"%s\", wanted \"%c\"\n", e->k, wantc);
++			printf("visited leaf node \"%s\", wanted \"%c\"\n", e->k, wantc);
+ 	if (v == postorder || v == leaf)
+ 		wantc++;
+ }
+@@ -72,7 +72,7 @@ struct e *set(char *k, int v)
+ 		count++;
+ 	p = tsearch(cur++, &root, cmp);
+ 	if (!p || strcmp(((struct e*)*p)->k, k) != 0)
+-		t_error("tsearch %s %d failed\n", k, v);
++		return 0;
+ 	if (!p) {
+ 		count--;
+ 		return 0;
+@@ -88,7 +88,8 @@ void *del(char *k)
+ 	return p;
+ }
+ 
+-int main() {
++UK_TESTCASE(uk_libc_testsuite, search_tsearch_tests)
++{
+ 	struct e *e;
+ 	void *p;
+ 
+@@ -102,44 +103,32 @@ int main() {
+ 	set("d", 4);
+ 
+ 	e = get("a");
+-	if (!e || e->v != 1)
+-		t_error("tfind a failed\n");
+-	if (get("z"))
+-		t_error("tfind z should fail\n");
++	UK_TEST_ASSERT(!(!e || e->v != 1));
++	UK_TEST_EXPECT_ZERO((get("z")));
+ 	e = set("g", 9);
+-	if (e && e->v != 7)
+-		t_error("tsearch g 9 returned data %d, wanted 7\n", e->v);
++	UK_TEST_ASSERT(!(e && e->v != 7));
++	
+ 	e = set("g", 9);
+-	if (e && e->v != 7)
+-		t_error("tsearch g 9 returned data %d, wanted 7\n", e->v);
++	UK_TEST_ASSERT(!(e && e->v != 7));
++	
+ 	e = set("i", 9);
+-	if (e && e->v != 9)
+-		t_error("tsearch i 9 returned data %d, wanted 9\n", e->v);
+-	if (del("foobar"))
+-		t_error("tdelete foobar should fail\n");
++	UK_TEST_ASSERT(!(e && e->v != 9));
++	UK_TEST_EXPECT_NULL(del("foobar"));
+ 
+ 	twalk(root, act);
+-	if (wantc!='j')
+-		t_error("twalk did not visit all nodes (wanted 'j' got '%c')\n", wantc);
++	UK_TEST_ASSERT((wantc=='j'));
+ 	searchkey = "h";
+ 	twalk(root, getparent);
+-	if (parent == 0)
+-		t_error("twalk search for key \"%s\" failed\n", searchkey);
++	UK_TEST_EXPECT_NOT_ZERO(parent);
+ 	p = del("h");
+-	if (p != parent)
+-		t_error("tdelete h failed to return parent (got %p wanted %p)\n", p, parent);
++	UK_TEST_ASSERT((p == parent));
+ 
+ 	e = *(void**)root;
+-	if (!del(e->k))
+-		t_error("tdelete root \"%s\" failed (returned 0)\n", e->k);
++	UK_TEST_EXPECT_NOT_NULL(del(e->k));
+ 
+ 	for (; count; count--) {
+ 		e = *(void**)root;
+-		if (!tdelete(e, &root, cmp))
+-			t_error("tdelete k=%s failed during destruction\n", e->k);
++		UK_TEST_EXPECT_NOT_NULL(tdelete(e, &root, cmp));
+ 	}
+-	if (root)
+-		t_error("tree destruction failed: root is nonzero %p\n", root);
+-
+-	return t_status;
++	UK_TEST_EXPECT_NULL(root);
+ }
+-- 
+2.25.1
+

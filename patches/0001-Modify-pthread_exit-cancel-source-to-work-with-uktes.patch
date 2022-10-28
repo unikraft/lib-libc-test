@@ -1,0 +1,50 @@
+From dbd5ad451f58ad2339209834766527e3ba2a646c Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 28 Oct 2022 10:20:54 +0300
+Subject: [PATCH] Modify pthread_exit-cancel source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/pthread_exit-cancel.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
+
+diff --git a/src/regression/pthread_exit-cancel.c b/src/regression/pthread_exit-cancel.c
+index 7a8d00b..170cb8d 100644
+--- a/src/regression/pthread_exit-cancel.c
++++ b/src/regression/pthread_exit-cancel.c
+@@ -2,9 +2,9 @@
+ // pthread_exit should call cancelation handlers
+ #include <pthread.h>
+ #include <string.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-#define TEST(r, f) if (((r)=(f))) t_error(#f " failed: %s\n", strerror(r))
++#define TEST(r, f) UK_TEST_EXPECT_ZERO(((r)=(f)))
+ 
+ static void cleanup(void *arg)
+ {
+@@ -19,7 +19,7 @@ static void *start(void *arg)
+ 	return arg;
+ }
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, pthread_exit_cancel_tests)
+ {
+ 	pthread_t td;
+ 	void *status;
+@@ -28,9 +28,6 @@ int main(void)
+ 
+ 	TEST(r, pthread_create(&td, 0, start, &arg));
+ 	TEST(r, pthread_join(td, &status));
+-	if (status)
+-		t_error("expected 0 thread exit status, got 0x%lx\n", (long)status);
+-	if (arg != 1)
+-		t_error("cleanup handler failed to run\n");
+-	return t_status;
++	UK_TEST_EXPECT_NULL(status);
++	UK_TEST_ASSERT(arg == 1);
+ }
+-- 
+2.25.1
+

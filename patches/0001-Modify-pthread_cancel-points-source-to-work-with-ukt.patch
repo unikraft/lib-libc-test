@@ -1,0 +1,139 @@
+From 56ea3f1c015f2a7d8726e2da46f079668ecc1930 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Sun, 23 Oct 2022 21:18:28 +0300
+Subject: [PATCH] Modify pthread_cancel-points source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/pthread_cancel-points.c | 43 ++++++++++++--------------
+ 1 file changed, 19 insertions(+), 24 deletions(-)
+
+diff --git a/src/functional/pthread_cancel-points.c b/src/functional/pthread_cancel-points.c
+index 8b169a0..ae5badb 100644
+--- a/src/functional/pthread_cancel-points.c
++++ b/src/functional/pthread_cancel-points.c
+@@ -6,13 +6,10 @@
+ #include <sys/mman.h>
+ #include <fcntl.h>
+ #include <unistd.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-#define TESTC(c, m) ( (c) || (t_error(#c " failed (%s, " m ")\n", cdescr), 0) )
+-#define TESTR(f, m) do {int r; \
+-	if ((r = (f))) t_error(#f " failed: %s (%s, " m ")\n", strerror(r), cdescr); } while (0)
+-#define TESTE(f, m) do { \
+-	if ((f)==-1) t_error(#f " failed: %s (%s, " m ")\n", strerror(errno), cdescr); } while (0)
++#define TESTC(c, m) UK_TEST_ASSERT((c))
++#define TESTR(f, m) UK_TEST_EXPECT_ZERO((f))
+ 
+ static sem_t sem_seq, sem_test;
+ 
+@@ -22,17 +19,17 @@ static const char *cdescr = "global initialization";
+ 
+ static void prepare_sem(void *arg)
+ {
+-	TESTR(sem_init(&sem_test, 0, (long)arg), "creating semaphore");
++	sem_init(&sem_test, 0, (long)arg);
+ }
+ 
+ static void cleanup_sem(void *arg)
+ {
+-	TESTR(sem_destroy(&sem_test), "destroying semaphore");
++	sem_destroy(&sem_test);
+ }
+ 
+ static void execute_sem_wait(void *arg)
+ {
+-	TESTR(sem_wait(&sem_test), "waiting on semaphore in the canceled thread");
++	sem_wait(&sem_test);
+ }
+ 
+ static void execute_sem_timedwait(void *arg)
+@@ -40,7 +37,7 @@ static void execute_sem_timedwait(void *arg)
+ 	struct timespec ts;
+ 	clock_gettime(CLOCK_REALTIME, &ts);
+ 	ts.tv_sec += 1;
+-	TESTR(sem_timedwait(&sem_test, &ts), "timed-waiting on semaphore in the canceled thread");
++	sem_timedwait(&sem_test, &ts);
+ }
+ 
+ static pthread_t td_test;
+@@ -54,23 +51,22 @@ static void *run_test(void *arg)
+ static void prepare_thread(void *arg)
+ {
+ 	prepare_sem(arg);
+-	TESTR(pthread_create(&td_test, 0, run_test, 0), "creating auxiliary thread");
++	pthread_create(&td_test, 0, run_test, 0);
+ }
+ 
+ static void cleanup_thread(void *arg)
+ {
+ 	void *res;
+ 	if (td_test) {
+-		TESTR(sem_post(&sem_test), "posting semaphore");
+-		TESTR(pthread_join(td_test, &res), "joining auxiliary thread");
+-		TESTC(res == 0, "auxiliary thread exit status");
++		sem_post(&sem_test);
++		pthread_join(td_test, &res);
+ 	}
+ 	cleanup_sem(arg);
+ }
+ 
+ static void execute_thread_join(void *arg)
+ {
+-	TESTR(pthread_join(td_test, 0), "joining in the canceled thread");
++	pthread_join(td_test, 0);
+ 	td_test = 0;
+ }
+ 
+@@ -81,15 +77,15 @@ static void prepare_dummy(void *arg)
+ static void execute_shm_open(void *arg)
+ {
+ 	int *fd = arg;
+-	TESTE(*fd = shm_open("/testshm", O_RDWR|O_CREAT, 0666), "");
++	*fd = shm_open("/testshm", O_RDWR|O_CREAT, 0666);
+ }
+ 
+ static void cleanup_shm(void *arg)
+ {
+ 	int *fd = arg;
+ 	if (*fd > 0) {
+-		TESTE(close(*fd), "shm fd");
+-		TESTE(shm_unlink("/testshm"), "");
++		close(*fd);
++		shm_unlink("/testshm");
+ 	}
+ }
+ 
+@@ -122,7 +118,7 @@ static void *run_execute(void *arg)
+ 	return 0;
+ }
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, pthread_cancel_points_test)
+ {
+ 	TESTR(sem_init(&sem_seq, 0, 0), "creating semaphore");
+ 
+@@ -138,14 +134,13 @@ int main(void)
+ 		TESTR(sem_post(&sem_seq), "unblocking canceled thread");
+ 		TESTR(pthread_join(td, &res), "joining canceled thread");
+ 		if (cur_sc->want_cancel) {
+-			TESTC(res == PTHREAD_CANCELED, "canceled thread exit status")
+-			&& TESTC(seqno == 1, "seqno");
++			TESTC(res == PTHREAD_CANCELED, "canceled thread exit status");
++			/*&&*/ TESTC(seqno == 1, "seqno");
+ 		} else {
+-			TESTC(res != PTHREAD_CANCELED, "canceled thread exit status")
+-			&& TESTC(seqno == 2, "seqno");
++			TESTC(res != PTHREAD_CANCELED, "canceled thread exit status");
++			/*&&*/ TESTC(seqno == 2, "seqno");
+ 		}
+ 		cur_sc->cleanup(cur_sc->arg);
+ 	}
+ 
+-	return t_status;
+ }
+-- 
+2.25.1
+

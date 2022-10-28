@@ -1,0 +1,61 @@
+From 9e368cef3ba8bdf13ae89e3b11867cf0cba6ec74 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 27 Oct 2022 12:29:00 +0300
+Subject: [PATCH] Modify fpclassify-invalid-ld80 source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/fpclassify-invalid-ld80.c | 21 +++++----------------
+ 1 file changed, 5 insertions(+), 16 deletions(-)
+
+diff --git a/src/regression/fpclassify-invalid-ld80.c b/src/regression/fpclassify-invalid-ld80.c
+index fe8eeb5..8777c2e 100644
+--- a/src/regression/fpclassify-invalid-ld80.c
++++ b/src/regression/fpclassify-invalid-ld80.c
+@@ -6,9 +6,8 @@
+ #include <stdint.h>
+ #include <stdio.h>
+ #include <string.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-#if LDBL_MANT_DIG==64
+ static char *strclass(int c)
+ {
+ #define C(n) case n: return #n;
+@@ -24,16 +23,13 @@ static char *strclass(int c)
+ 
+ #define T(f, desc, c, cwant, s, swant) do{ \
+ 	c = fpclassify(f); \
+-	if (c != cwant) \
+-		t_error("fpclassify(%s) failed: got %s want %s\n", desc, strclass(c), #cwant); \
++	UK_TEST_ASSERT(c == cwant); \
+ 	memset(s, 0, sizeof(s)); \
+-	if (snprintf(s, sizeof(s), "%La", f) >= sizeof(s)) \
+-		t_error("snprintf(\"%%La\", %s) failed with invalid return value\n", desc); \
+-	if (strcmp(s,swant) != 0) \
+-		t_error("snprintf(\"%%La\", %s) failed: got \"%.*s\" want %s\n", desc, sizeof(s), s, #swant); \
++	UK_TEST_ASSERT(snprintf(s, sizeof(s), "%La", f) < sizeof(s)); \
++	UK_TEST_EXPECT_ZERO(strcmp(s,swant)); \
+ }while(0)
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, fpclassify_invalid_ld80_tests)
+ {
+ 	union {
+ 		long double f;
+@@ -60,11 +56,4 @@ int main(void)
+ 	u.f=NAN;
+ 	u.i.m&=(uint64_t)-1/2;
+ 	T(u.f, "nan with msb unset", c, FP_NAN, s, "nan");
+-	return t_status;
+ }
+-#else
+-int main(void)
+-{
+-	return 0;
+-}
+-#endif
+-- 
+2.25.1
+

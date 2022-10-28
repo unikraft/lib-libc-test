@@ -1,0 +1,45 @@
+From 85f507edea8c186a45bbb6bcc27153c93e4ed21a Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 28 Oct 2022 08:44:21 +0300
+Subject: [PATCH] Modify pthread_cond_wait-cancel_ignored source to work with
+ uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/pthread_cond_wait-cancel_ignored.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/src/regression/pthread_cond_wait-cancel_ignored.c b/src/regression/pthread_cond_wait-cancel_ignored.c
+index 6d02bb9..6e18faa 100644
+--- a/src/regression/pthread_cond_wait-cancel_ignored.c
++++ b/src/regression/pthread_cond_wait-cancel_ignored.c
+@@ -5,7 +5,7 @@
+ #include <errno.h>
+ #include <time.h>
+ 
+-#include "test.h"
++#include <uk/test.h>
+ 
+ static pthread_mutex_t mx = PTHREAD_MUTEX_INITIALIZER;
+ static pthread_cond_t cv = PTHREAD_COND_INITIALIZER;
+@@ -29,7 +29,7 @@ static void *waiter(void *p)
+ 	return 0;
+ }
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, pthread_cond_wait_cancel_ignored_tests)
+ {
+ 	pthread_t td;
+ 	struct timespec ts;
+@@ -48,7 +48,5 @@ int main(void)
+ 	pthread_cond_signal(&cv);
+ 	pthread_mutex_unlock(&mx);
+ 	pthread_join(td, &rv);
+-	if (rv != PTHREAD_CANCELED)
+-		t_error("pthread_cond_wait did not act on cancellation\n");
+-	return t_status;
++	UK_TEST_ASSERT(rv == PTHREAD_CANCELED);
+ }
+-- 
+2.25.1
+

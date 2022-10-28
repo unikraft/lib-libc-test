@@ -1,0 +1,47 @@
+From 2bf93e2bd3014cafd1bd790437162e88ad5478e3 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Sun, 23 Oct 2022 21:22:12 +0300
+Subject: [PATCH] Modify pthread_cancel source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/pthread_cancel.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/src/functional/pthread_cancel.c b/src/functional/pthread_cancel.c
+index 26db8f3..735b83a 100644
+--- a/src/functional/pthread_cancel.c
++++ b/src/functional/pthread_cancel.c
+@@ -1,11 +1,10 @@
+ #include <pthread.h>
+ #include <semaphore.h>
+ #include <string.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-#define TESTC(c, m) ( (c) || (t_error("%s failed (" m ")\n", #c), 0) )
+-#define TESTR(r, f, m) ( \
+-	((r) = (f)) == 0 || (t_error("%s failed: %s (" m ")\n", #f, strerror(r)), 0) )
++#define TESTC(c, m) UK_TEST_ASSERT((c))
++#define TESTR(r, f, m) UK_TEST_EXPECT_ZERO((f))
+ 
+ static void *start_async(void *arg)
+ {
+@@ -58,7 +57,7 @@ static void *start_nested(void *arg)
+ 	return 0;
+ }
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, pthread_cancel_test)
+ {
+ 	pthread_t td;
+ 	sem_t sem1;
+@@ -94,5 +93,4 @@ int main(void)
+ 	TESTC(foo[2] == 3, "cleanup handler failed to run");
+ 	TESTC(foo[3] == 4, "cleanup handler failed to run");
+ 
+-	return t_status;
+ }
+-- 
+2.25.1
+

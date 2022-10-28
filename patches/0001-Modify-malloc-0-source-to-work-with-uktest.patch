@@ -1,0 +1,41 @@
+From 4c27fbe191ab743d081a4c5d6ee07b326d416ff2 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 27 Oct 2022 14:57:33 +0300
+Subject: [PATCH] Modify malloc-0 source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/malloc-0.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/src/regression/malloc-0.c b/src/regression/malloc-0.c
+index e354bca..e2e13a4 100644
+--- a/src/regression/malloc-0.c
++++ b/src/regression/malloc-0.c
+@@ -2,19 +2,16 @@
+ // malloc(0) should return unique pointers
+ // (often expected and gnulib replaces malloc if malloc(0) returns 0)
+ #include <stdlib.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, malloc_0_tests)
+ {
+ 	void *p = malloc(0);
+ 	void *q = malloc(0);
+ 	void *r = malloc(0);
+-	if (!p || !q || !r)
+-		t_error("malloc(0) returned NULL\n");
+-	if (p == q || p == r || q == r)
+-		t_error("malloc(0) returned non-unique pointers: %p, %p, %p\n", p, q, r);
++	UK_TEST_ASSERT(!(!p || !q || !r));
++	UK_TEST_ASSERT(!(p == q || p == r || q == r));
+ 	free(q);
+ 	free(p);
+ 	free(r);
+-	return t_status;
+ }
+-- 
+2.25.1
+

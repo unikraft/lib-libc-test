@@ -1,0 +1,41 @@
+From b66548e8f703c0f5d91338c9c067b77c60d4b12e Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 27 Oct 2022 23:37:47 +0300
+Subject: [PATCH] Modify malloc-oom source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/malloc-oom.c | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
+
+diff --git a/src/regression/malloc-oom.c b/src/regression/malloc-oom.c
+index d9a1f6e..8d0b3c1 100644
+--- a/src/regression/malloc-oom.c
++++ b/src/regression/malloc-oom.c
+@@ -2,18 +2,13 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <errno.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, malloc_oom_tests)
+ {
+-	if (t_memfill() < 0)
+-		t_error("memfill failed\n");
++	UK_TEST_ASSERT(t_memfill() >= 0);
+ 
+ 	errno = 0;
+-	if (malloc(50000))
+-		t_error("malloc was successful\n");
+-	if (errno != ENOMEM)
+-		t_error("expected ENOMEM, got %s\n", strerror(errno));
+-
+-	return t_status;
++	UK_TEST_EXPECT_NULL(malloc(50000));
++	UK_TEST_ASSERT(errno == ENOMEM);
+ }
+-- 
+2.25.1
+

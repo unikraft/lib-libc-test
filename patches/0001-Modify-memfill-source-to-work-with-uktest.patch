@@ -1,0 +1,25 @@
+From f0017ebe9628b62ad36dffc78f56496ecfb26648 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 27 Oct 2022 23:32:44 +0300
+Subject: [PATCH] Modify memfill source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/common/memfill.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/common/memfill.c b/src/common/memfill.c
+index c53bfea..38fb971 100644
+--- a/src/common/memfill.c
++++ b/src/common/memfill.c
+@@ -9,7 +9,6 @@ int t_memfill()
+ 	int r = 0;
+ 	/* alloc mmap space with PROT_NONE */
+ 	if (t_vmfill(0,0,0) < 0) {
+-		t_error("vmfill failed: %s\n", strerror(errno));
+ 		r = -1;
+ 	}
+ 	/* limit brk space */
+-- 
+2.25.1
+

@@ -1,0 +1,74 @@
+From 24d3b6d588f856b709f6592795d961dde04f8f73 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Sun, 23 Oct 2022 23:49:20 +0300
+Subject: [PATCH] Modify search_hsearch source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/search_hsearch.c | 29 ++++++++++-------------------
+ 1 file changed, 10 insertions(+), 19 deletions(-)
+
+diff --git a/src/functional/search_hsearch.c b/src/functional/search_hsearch.c
+index be9fb64..f6f1a1e 100644
+--- a/src/functional/search_hsearch.c
++++ b/src/functional/search_hsearch.c
+@@ -6,26 +6,23 @@
+ #include <string.h>
+ #include <search.h>
+ #include <errno.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ #define set(k,v) do{ \
+ 	e = hsearch((ENTRY){.key = k, .data = (void*)v}, ENTER); \
+-	if (!e || strcmp(e->key, k) != 0) \
+-		t_error("hsearch ENTER %s %d failed\n", k, v); \
++	UK_TEST_ASSERT(!(!e || strcmp(e->key, k) != 0)); \
+ }while(0)
+ 
+ #define get(k) hsearch((ENTRY){.key = k, .data = 0}, FIND)
+ 
+ #define getdata(e) ((intptr_t)(e)->data)
+ 
+-int main()
++UK_TESTCASE(uk_libc_testsuite, search_hsearch_test)
+ {
+ 	ENTRY *e;
+ 
+-	if (hcreate(-1) || errno != ENOMEM)
+-		t_error("hcreate((size_t)-1) should fail with ENOMEM got %s\n", strerror(errno));
+-	if (!hcreate(13))
+-		t_error("hcreate(13) failed\n");
++	UK_TEST_ASSERT(!((hcreate(-1) || errno != ENOMEM)));
++	UK_TEST_EXPECT_NOT_ZERO(hcreate(13));
+ 	set("", 0);
+ 	set("a", 1);
+ 	set("b", 2);
+@@ -36,19 +33,13 @@ int main()
+ 	set("g", 7);
+ 	set("h", 8);
+ 	set("iiiiiiiiii", 9);
+-	if (!get("a"))
+-		t_error("hsearch FIND a failed\n");
+-	if (get("c"))
+-		t_error("hsearch FIND c should fail\n");
++	UK_TEST_EXPECT_NOT_NULL(get("a"));
++	UK_TEST_EXPECT_NULL(get("c"));
+ 	set("g", 10);
+-	if (e && getdata(e) != 7)
+-		t_error("hsearch ENTER g 10 returned data %d, wanted 7\n", getdata(e));
++	UK_TEST_ASSERT(!(e && getdata(e) != 7));
+ 	set("g", 10);
+-	if (e && getdata(e) != 7)
+-		t_error("hsearch ENTER g 10 returned data %d, wanted 7\n", getdata(e));
++	UK_TEST_ASSERT(!(e && getdata(e) != 7));
+ 	set("j", 10);
+-	if (e && getdata(e) != 10)
+-		t_error("hsearch ENTER j 10 returned data %d, wanted 10\n", getdata(e));
++	UK_TEST_ASSERT(!(e && getdata(e) != 10));
+ 	hdestroy();
+-	return t_status;
+ }
+-- 
+2.25.1
+

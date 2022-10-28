@@ -1,0 +1,64 @@
+From bd230adb06c644379f161d34b4625314a09338ff Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 27 Oct 2022 18:13:54 +0300
+Subject: [PATCH] Modify malloc-brk-fail to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/malloc-brk-fail.c | 19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
+
+diff --git a/src/regression/malloc-brk-fail.c b/src/regression/malloc-brk-fail.c
+index d0ccd35..95179d9 100644
+--- a/src/regression/malloc-brk-fail.c
++++ b/src/regression/malloc-brk-fail.c
+@@ -5,11 +5,11 @@
+ #include <string.h>
+ #include <sys/mman.h>
+ #include <sys/resource.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-#define T(f) ((f)==0 || (t_error(#f " failed: %s\n", strerror(errno)), 0))
++#define T(f) UK_TEST_EXPECT_ZERO((f))
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, malloc_brk_fail_tests)
+ {
+ 	void *p;
+ 	void *q;
+@@ -18,27 +18,22 @@ int main(void)
+ 
+ 	// fill memory, largest mmaped area is [p,p+n)
+ 	if (t_vmfill(&p, &n, 1) < 1 || n < 2*65536) {
+-		t_error("vmfill failed\n");
+ 		return 1;
+ 	}
++
+ 	errno = 0;
+ 	T(t_setrlim(RLIMIT_DATA, 0));
+ 
+ 	// malloc should fail here
+ 	errno = 0;
+ 	q = malloc(10000);
+-	if (q)
+-		t_error("malloc(10000) succeeded after memory is filled\n");
+-	else if (errno != ENOMEM)
+-		t_error("malloc did not fail with ENOMEM, got %s\n", strerror(errno));
++	UK_TEST_EXPECT_NULL(q);
++	UK_TEST_ASSERT(errno == ENOMEM);
+ 
+ 	// make some space available for mmap
+ 	T(munmap((char*)p+65536, 65536));
+ 
+ 	// malloc should succeed now
+ 	q = malloc(10000);
+-	if (!q)
+-		t_error("malloc(10000) failed (eventhough 64k is available to mmap): %s\n", strerror(errno));
+-
+-	return t_status;
++	UK_TEST_EXPECT_NOT_NULL(q);
+ }
+-- 
+2.25.1
+
