@@ -1,4 +1,13 @@
 menuconfig LIBLIBCTEST
 	bool "Libc-test Unikraft library"
 	default n
-#	depends on LIBMUSL
+	depends on (LIBNOLIBC || HAVE_LIBC)
+
+
+if LIBLIBCTEST
+
+	config LIBLIBCTEST_STRING_TESTS
+		bool "Different tests for string functions"
+		default y
+
+endif
