@@ -120,4 +120,9 @@ if LIBLIBCTEST
 		default y
 		depends on !LIBNOLIBC
 
+	config LIBLIBCTEST_ACCESS_TESTS
+		bool "Access tests"
+		default y
+		depends on !LIBNOLIBC
+
 endif

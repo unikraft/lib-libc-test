@@ -68,6 +68,12 @@ LIBLIBCTEST_FLAGS_SUPPRESS =
 ################################################################################
 LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_BASE)/include/main.c
 
+ifeq ($(filter y,$(CONFIG_LIBNOLIBC)),)
+    ifneq ($(filter y,$(CONFIG_LIBLIBCTEST_ACCESS_TESTS) $(CONFIG_LIBUKTEST_ALL)),)
+        LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_BASE)/access_test.c
+    endif
+endif
+
 ifneq ($(filter y,$(CONFIG_LIBLIBCTEST_STRING_TESTS) $(CONFIG_LIBUKTEST_ALL)),)
 	LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/string_memcpy.c
     LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/string_strchr.c
