@@ -1,0 +1,49 @@
+From 3b299d8d780bcab4513f571659a6b62891d07bbb Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 10 Nov 2022 09:32:11 +0200
+Subject: [PATCH] Modify fnmatch source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/fnmatch.c | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
+
+diff --git a/src/functional/fnmatch.c b/src/functional/fnmatch.c
+index 96b8e06..b6d7743 100644
+--- a/src/functional/fnmatch.c
++++ b/src/functional/fnmatch.c
+@@ -3,7 +3,7 @@
+ #include <stdlib.h>
+ #include <fnmatch.h>
+ #include <unistd.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ /* adapted from dietlibc's test-newfnmatch.c */
+ 
+@@ -143,7 +143,7 @@ struct {
+ #endif
+ };
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, fnmatch_tests)
+ {
+ 	int i;
+ 
+@@ -152,12 +152,6 @@ int main(void)
+ 
+ 		r = fnmatch(tests[i].pattern, tests[i].string, tests[i].flags);
+ 		x = tests[i].expected;
+-		if (r != x && (r != FNM_NOMATCH || x != -FNM_NOMATCH)) {
+-			t_error("fnmatch(\"%s\", \"%s\", %s) failed, got %d want %d\n",
+-				tests[i].pattern, tests[i].string,
+-				flagstr(fnmatch_flags, tests[i].flags),
+-				r, x);
+-		}
++		UK_TEST_ASSERTF(!(r != x && (r != FNM_NOMATCH || x != -FNM_NOMATCH)), "fnmatch(%s, %s, %s)", tests[i].pattern, tests[i].string, flagstr(fnmatch_flags, tests[i].flags));
+ 	}
+-	return t_status;
+ }
+-- 
+2.25.1
+

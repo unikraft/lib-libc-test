@@ -1,0 +1,57 @@
+From f9897529195d7872b03bea2deeee1ae433db3c6c Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 10 Nov 2022 10:59:53 +0200
+Subject: [PATCH] Modify regex-ere-backref source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/regex-ere-backref.c | 20 +++++---------------
+ 1 file changed, 5 insertions(+), 15 deletions(-)
+
+diff --git a/src/regression/regex-ere-backref.c b/src/regression/regex-ere-backref.c
+index 196b25c..a17e1c0 100644
+--- a/src/regression/regex-ere-backref.c
++++ b/src/regression/regex-ere-backref.c
+@@ -1,9 +1,9 @@
+ // commit 7c8c86f6308c7e0816b9638465a5917b12159e8f 2015-03-20
+ // backref is not valid in ere
+ #include <regex.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, regex_ere_backref_tests)
+ {
+ 	char buf[200];
+ 	char pat[] = "(a)\\1";
+@@ -11,24 +11,14 @@ int main(void)
+ 	int n;
+ 
+ 	n = regcomp(&r, pat, REG_EXTENDED);
+-	if (n) {
+-		regerror(n, &r, buf, sizeof buf);
+-		t_error("regcomp(%s) returned %d (%s) wanted 0\n", pat, n, buf);
+-	}
++	UK_TEST_ASSERTF((n == 0), "regcomp(&r, %s, REG_EXTENDED) == %d", pat, n);
+ 
+ 	n = regexec(&r, "aa", 0, 0, 0);
++	UK_TEST_ASSERTF((n == REG_NOMATCH), "regexec(&r, aa, 0, 0, 0) == REG_NOMATCH");
+ 	if (n != REG_NOMATCH) {
+ 		regerror(n, &r, buf, sizeof buf);
+-		t_error("regexec(/%s/ ~ \"aa\") returned %d (%s), wanted REG_NOMATCH\n",
+-			pat, n, buf);
+ 	}
+ 
+ 	n = regexec(&r, "a1", 0, 0, 0);
+-	if (n) {
+-		regerror(n, &r, buf, sizeof buf);
+-		t_error("regexec(/%s/ ~ \"a1\") returned %d (%s), wanted 0\n",
+-			pat, n, buf);
+-	}
+-
+-	return t_status;
++	UK_TEST_ASSERTF((n == 0), "regexec(&r, a1, 0, 0, 0) == 0");
+ }
+-- 
+2.25.1
+

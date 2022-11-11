@@ -1,6 +1,6 @@
-From 232092d247e60a9e616ce4c956d38510b6ebb256 Mon Sep 17 00:00:00 2001
+From 3e66a977115156739a72fd82e999ec2f3ee8adb3 Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Tue, 25 Oct 2022 10:05:57 +0300
+Date: Tue, 8 Nov 2022 22:35:26 +0200
 Subject: [PATCH] Modify string_strcspn source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
  1 file changed, 3 insertions(+), 6 deletions(-)
 
 diff --git a/src/functional/string_strcspn.c b/src/functional/string_strcspn.c
-index 88df383..7278606 100644
+index 88df383..87ffe01 100644
 --- a/src/functional/string_strcspn.c
 +++ b/src/functional/string_strcspn.c
 @@ -1,16 +1,15 @@
@@ -24,7 +24,7 @@ index 88df383..7278606 100644
  	size_t r = strcspn(p, q); \
 -	if (r != n) \
 -		t_error("strcspn(%s,%s) returned %lu, wanted %lu\n", #s, #c, (unsigned long)r, (unsigned long)(n)); \
-+	UK_TEST_ASSERT((r ==n)); \
++	UK_TEST_ASSERTF((r ==n), "Strcspn found %d characters that are not in q.", n); \
  }
  
 -int main(void)

@@ -1,0 +1,51 @@
+From ef6b50beac3264e882006d6d8edba0d027913d88 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 10 Nov 2022 10:42:32 +0200
+Subject: [PATCH] Modify regex-bracket-icase source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/regex-bracket-icase.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/src/regression/regex-bracket-icase.c b/src/regression/regex-bracket-icase.c
+index 82b9287..6c4895b 100644
+--- a/src/regression/regex-bracket-icase.c
++++ b/src/regression/regex-bracket-icase.c
+@@ -3,9 +3,9 @@
+ #include <regex.h>
+ #include <limits.h>
+ #include <stdio.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, regex_bracket_icase_tests)
+ {
+ 	char buf[100];
+ 	char *pat;
+@@ -28,19 +28,16 @@ int main(void)
+ 
+ 	pat = "[^aBcC]";
+ 	n = regcomp(&re, pat, REG_ICASE);
++	UK_TEST_ASSERTF((n == 0), "regcomp(&re, %s, REG_ICASE) == %d", pat, n);
+ 	if (n) {
+ 		regerror(n, &re, buf, sizeof buf);
+-		t_error("regcomp(\"%s\") failed: %d (%s)\n", pat, n, buf);
+ 	}
+ 
+ 	for (i = 0; t[i].s; i++) {
+ 		n = regexec(&re, t[i].s, 0, 0, 0);
++		UK_TEST_ASSERTF((n == t[i].n), "regexec(&re, %s, 0, 0, 0) == %d", t[i].s, t[i].n);
+ 		if (n != t[i].n) {
+ 			regerror(n, &re, buf, sizeof buf);
+-			t_error("regexec(/%s/, \"%s\") returned %d (%s), wanted %d\n",
+-				pat, t[i].s, n, buf, t[i].n);
+ 		}
+ 	}
+-
+-	return t_status;
+ }
+-- 
+2.25.1
+

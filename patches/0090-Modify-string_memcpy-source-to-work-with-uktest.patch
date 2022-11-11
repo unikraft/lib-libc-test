@@ -1,0 +1,72 @@
+From 9000ef078b2a1399f569362859ffcae44c7ec253 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Tue, 8 Nov 2022 10:52:36 +0200
+Subject: [PATCH] Modify string_memcpy source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/string_memcpy.c | 26 ++++++++++++--------------
+ 1 file changed, 12 insertions(+), 14 deletions(-)
+
+diff --git a/src/functional/string_memcpy.c b/src/functional/string_memcpy.c
+index 96256a7..1c3ceaa 100644
+--- a/src/functional/string_memcpy.c
++++ b/src/functional/string_memcpy.c
+@@ -1,7 +1,8 @@
+ #include <string.h>
+ #include <stdlib.h>
++#include <stdio.h>
+ #include <stdint.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ static char buf[512];
+ 
+@@ -12,7 +13,7 @@ static void *aligned(void *p) {
+ }
+ 
+ #define N 80
+-static void test_align(int dalign, int salign, int len)
++static int test_memory_align(int dalign, int salign, int len)
+ {
+ 	char *src = aligned(buf);
+ 	char *dst = aligned(buf + 128);
+@@ -30,26 +31,23 @@ static void test_align(int dalign, int salign, int len)
+ 		src[salign+i] = want[dalign+i] = '0'+i;
+ 	p = pmemcpy(dst+dalign, src+salign, len);
+ 	if (p != dst+dalign)
+-		t_error("memcpy(%p,...) returned %p\n", dst+dalign, p);
++		return -1;
+ 	for (i = 0; i < N; i++)
+ 		if (dst[i] != want[i]) {
+-			t_error("memcpy(align %d, align %d, %d) failed\n", dalign, salign, len);
+-			t_printf("got : %.*s\n", dalign+len+1, dst);
+-			t_printf("want: %.*s\n", dalign+len+1, want);
+-			break;
++			return -1;
+ 		}
++	return 0;
+ }
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, string_memcpy_tests)
+ {
+ 	int i,j,k;
+ 
+ 	pmemcpy = memcpy;
+ 
+-	for (i = 0; i < 16; i++)
+-		for (j = 0; j < 16; j++)
+-			for (k = 0; k < 64; k++)
+-				test_align(i,j,k);
+-
+-	return t_status;
++	for (i = 0; i < 4; i++)
++		for (j = 0; j < 4; j++)
++			for (k = 0; k < 16; k++)
++				UK_TEST_ASSERTF(test_memory_align(i,j,k)==0, "Test memcpy copied at the correct position in buffer with i=%d j=%d k=%d", i,j,k);
++			
+ }
+-- 
+2.25.1
+

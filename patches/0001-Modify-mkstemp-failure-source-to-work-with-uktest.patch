@@ -1,0 +1,55 @@
+From 162befedde2a1e4f7c0ad1f573a71b8f2116534b Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 11 Nov 2022 11:28:02 +0200
+Subject: [PATCH] Modify mkstemp-failure source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/mkstemp-failure.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
+
+diff --git a/src/regression/mkstemp-failure.c b/src/regression/mkstemp-failure.c
+index 5afec5f..eefc0f3 100644
+--- a/src/regression/mkstemp-failure.c
++++ b/src/regression/mkstemp-failure.c
+@@ -6,24 +6,26 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <errno.h>
+-#include "test.h"
++#include <uk/test.h>
++#include "fs_essentials.h"
+ 
+ int mkstemp(char *);
+ 
+-#define S "/dev/null/fooXXXX"
++#define S "/tmp/fooXXXX"
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, mkstemp_failure_tests)
+ {
+ 	char p[] = S;
+ 	int r;
++	int i;
++
++	UK_TEST_EXPECT_ZERO((i = create_fs_for_tests()));
++	if(i)
++		return;
+ 
+ 	r = mkstemp(p);
+-	if (r != -1)
+-		t_error("mkstemp(" S ") did not fail\n");
+-	if (memcmp(p, S, sizeof p) != 0)
+-		t_error("mkstemp(" S ") modified the template: %s\n", p);
+-	if (r == -1 && errno != EINVAL)
+-		t_error("mkstemp(" S ") failed with %d [%s] instead of %d [%s]\n",
+-			errno, strerror(errno), EINVAL, strerror(EINVAL));
+-	return t_status;
++	UK_TEST_ASSERT(r == -1);
++	UK_TEST_EXPECT_ZERO(memcmp(p, S, sizeof p));
++	UK_TEST_ASSERT(!(r == -1 && errno != EINVAL));
++	UK_TEST_EXPECT_ZERO(destroy_fs());
+ }
+-- 
+2.25.1
+

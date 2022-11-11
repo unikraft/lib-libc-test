@@ -1,0 +1,48 @@
+From 712bffd1282821ebf4a7faf56ebcf8c0da917b04 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 10 Nov 2022 11:05:31 +0200
+Subject: [PATCH] Modify regex-negated-range source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/regex-negated-range.c | 17 ++++-------------
+ 1 file changed, 4 insertions(+), 13 deletions(-)
+
+diff --git a/src/regression/regex-negated-range.c b/src/regression/regex-negated-range.c
+index 50db523..13ee27f 100644
+--- a/src/regression/regex-negated-range.c
++++ b/src/regression/regex-negated-range.c
+@@ -1,26 +1,17 @@
+ // negated overlapping ranges in a regex bracket
+ // were not handled correctly by tre
+ #include <regex.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, regex_negated_range_tests)
+ {
+ 	char buf[200];
+ 	regex_t r;
+ 	int n;
+ 
+ 	n = regcomp(&r, "[^aa-z]", 0);
+-	if (n) {
+-		regerror(n, &r, buf, sizeof buf);
+-		t_error("regcomp returned %d (%s)\n", n, buf);
+-	}
++	UK_TEST_ASSERTF((n == 0), "regcomp(&r, [^aa-z], 0) == 0");
+ 
+ 	n = regexec(&r, "k", 0, 0, 0);
+-	if (n != REG_NOMATCH) {
+-		regerror(n, &r, buf, sizeof buf);
+-		t_error("regexec(/[^aa-z]/ ~ \"k\") returned %d (%s), wanted REG_NOMATCH\n",
+-			n, buf);
+-	}
+-
+-	return t_status;
++	UK_TEST_ASSERTF((n == REG_NOMATCH), "regexec(&r, k, 0, 0, 0) == REG_NOMATCH");
+ }
+-- 
+2.25.1
+

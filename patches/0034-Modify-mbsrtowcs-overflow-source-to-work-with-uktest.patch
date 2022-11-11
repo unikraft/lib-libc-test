@@ -1,18 +1,18 @@
-From eed7022a0e639534ea802e6d5b3cecbfcc2168ed Mon Sep 17 00:00:00 2001
+From ad1fc5424c969416eced347951f8e8129cc83b92 Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Thu, 27 Oct 2022 23:43:08 +0300
+Date: Thu, 10 Nov 2022 08:46:51 +0200
 Subject: [PATCH] Modify mbsrtowcs-overflow source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
 ---
- src/regression/mbsrtowcs-overflow.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+ src/regression/mbsrtowcs-overflow.c | 17 +++++------------
+ 1 file changed, 5 insertions(+), 12 deletions(-)
 
 diff --git a/src/regression/mbsrtowcs-overflow.c b/src/regression/mbsrtowcs-overflow.c
-index 6f2a9da..284c0ea 100644
+index 6f2a9da..e51417b 100644
 --- a/src/regression/mbsrtowcs-overflow.c
 +++ b/src/regression/mbsrtowcs-overflow.c
-@@ -1,9 +1,9 @@
+@@ -1,22 +1,15 @@
  // commit 211264e46a2f1bc382a84435e904d1548de672b0 2013-09-27
  // mbsrtowcs should not write outside the ws array
  #include <wchar.h>
@@ -24,10 +24,10 @@ index 6f2a9da..284c0ea 100644
  {
  	wchar_t ws[] = L"XXXXX";
  	const char *src = "abcd";
-@@ -11,12 +11,7 @@ int main(void)
- 	size_t r;
+ 	const char *want = src + 4;
+-	size_t r;
  
- 	r = mbsrtowcs(ws, &src, 4, 0);
+-	r = mbsrtowcs(ws, &src, 4, 0);
 -	if (r != 4)
 -		t_error("mbsrtowcs(ws, &abcd, 4, 0) returned %zu, wanted 4\n", r);
 -	if (src != want)
@@ -36,9 +36,9 @@ index 6f2a9da..284c0ea 100644
 -		t_error("ws is L\"%ls\", wanted L\"abcdX\"\n", ws);
 -
 -	return t_status;
-+	UK_TEST_ASSERT(r == 4);
-+	UK_TEST_ASSERT(src == want);
-+	UK_TEST_EXPECT_ZERO(wcscmp(ws, L"abcdX"));
++	UK_TEST_ASSERT(mbsrtowcs(ws, &src, 4, 0) == 4);
++	UK_TEST_ASSERTF((src == want), "%p == %p", src, want);
++	UK_TEST_ASSERTF((wcscmp(ws, L"abcdX") == 0), "wcscmp(abcdX, abcdX) returned 0.");
  }
 -- 
 2.25.1

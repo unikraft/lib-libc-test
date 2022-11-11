@@ -1,0 +1,43 @@
+From 208775dd5f73dbb36291adf85a6d7648a03c7e93 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 10 Nov 2022 11:07:47 +0200
+Subject: [PATCH] Modify regexec-nosub source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/regexec-nosub.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
+
+diff --git a/src/regression/regexec-nosub.c b/src/regression/regexec-nosub.c
+index 4c580d9..82c619b 100644
+--- a/src/regression/regexec-nosub.c
++++ b/src/regression/regexec-nosub.c
+@@ -1,21 +1,16 @@
+ // commit: 72ed3d47e567b1635a35d3c1d174c8a8b2787e30 2014-07-17
+ // regexec should not crash on non-zero nmatch with REG_NOSUB
+ #include <regex.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, regex_nosub_tests)
+ {
+ 	regex_t re;
+ 	int r;
+ 
+ 	r = regcomp(&re, "abc", REG_NOSUB);
+-	if (r)
+-		t_error("regcomp failed: %d\n", r);
++	UK_TEST_ASSERTF((r == 0), "regcomp(&re, abc, REG_NOSUB) == 0");
+ 	r = regexec(&re, "zyx abc", 1, 0, 0);
+-	if (r == REG_NOMATCH)
+-		t_error("regexec failed to match\n");
+-	else if (r)
+-		t_error("regexec returned invalid code: %d\n", r);
++	UK_TEST_ASSERTF((r == 0), "regexec(&re, zyx abc, 1, 0, 0) == 0");
+ 	regfree(&re);
+-	return t_status;
+ }
+-- 
+2.25.1
+

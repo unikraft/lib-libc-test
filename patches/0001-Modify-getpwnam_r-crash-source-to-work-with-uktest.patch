@@ -1,0 +1,41 @@
+From cb5ec2a3edf32aed8db4666cdc60dfd6d66b2dc2 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 11 Nov 2022 10:28:01 +0200
+Subject: [PATCH] Modify getpwnam_r-crash source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/getpwnam_r-crash.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/src/regression/getpwnam_r-crash.c b/src/regression/getpwnam_r-crash.c
+index 1e65b7d..6a80c5e 100644
+--- a/src/regression/getpwnam_r-crash.c
++++ b/src/regression/getpwnam_r-crash.c
+@@ -2,12 +2,19 @@
+ // getpwnam_r should not crash on nonexistant users when errno is 0
+ 
+ #include <pwd.h>
+-#include "test.h"
++#include <uk/test.h>
++#include "fs_essentials.h"
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, getpwnam_r_crash_tests)
+ {
+ 	struct passwd *pw, pwbuf;
+ 	char buf[1024];
+-	getpwnam_r("nonsensical_user", &pwbuf, buf, sizeof buf, &pw);
+-	return t_status;
++	int res;
++	UK_TEST_EXPECT_ZERO((res = create_fs_for_tests()));
++	if(res)
++		return;
++	res = getpwnam_r("nonsensical_user", &pwbuf, buf, sizeof buf, &pw);
++	UK_TEST_EXPECT_NOT_ZERO(res);
++	UK_TEST_EXPECT_NULL(pw);
++	UK_TEST_EXPECT_ZERO(destroy_fs());
+ }
+-- 
+2.25.1
+
