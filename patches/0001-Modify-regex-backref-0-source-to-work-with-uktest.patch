@@ -1,0 +1,48 @@
+From 521765112c5aa86a372754fb78eed6cb06639121 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 10 Nov 2022 10:37:50 +0200
+Subject: [PATCH] Modify regex-backref-0 source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/regex-backref-0.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/src/regression/regex-backref-0.c b/src/regression/regex-backref-0.c
+index 289be3b..51dd3c4 100644
+--- a/src/regression/regex-backref-0.c
++++ b/src/regression/regex-backref-0.c
+@@ -1,9 +1,9 @@
+ // \0 is not a valid backref, it is undefined by the standard
+ // we treat such cases as literal char
+ #include <regex.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, regex_backref_tests)
+ {
+ 	char buf[200];
+ 	char pat[] = "a\\0";
+@@ -11,16 +11,13 @@ int main(void)
+ 	int n;
+ 
+ 	n = regcomp(&r, pat, 0);
++	UK_TEST_ASSERTF((n == 0), "regcomp(&r, %s, 0) == 0", pat);
+ 	if (n) {
+ 		regerror(n, &r, buf, sizeof buf);
+-		t_error("regcomp(%s) returned %d (%s) wanted 0\n", pat, n, buf);
+ 	}
+ 	n = regexec(&r, "a0", 0, 0, 0);
++	UK_TEST_ASSERTF((n == 0), "regexec(&r, %s, 0, 0, 0) == 0", "a0");
+ 	if (n) {
+ 		regerror(n, &r, buf, sizeof buf);
+-		t_error("regexec(/%s/ ~ \"a0\") returned %d (%s), wanted 0\n",
+-			pat, n, buf);
+ 	}
+-
+-	return t_status;
+ }
+-- 
+2.25.1
+

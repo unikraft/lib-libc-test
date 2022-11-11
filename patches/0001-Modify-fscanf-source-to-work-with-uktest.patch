@@ -1,0 +1,79 @@
+From 051002dbdf498d517372589b859545acf66bc943 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 11 Nov 2022 09:53:18 +0200
+Subject: [PATCH] Modify fscanf source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/fscanf.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/src/functional/fscanf.c b/src/functional/fscanf.c
+index 17fdb64..ac36e10 100644
+--- a/src/functional/fscanf.c
++++ b/src/functional/fscanf.c
+@@ -3,19 +3,16 @@
+ #include <errno.h>
+ #include <limits.h>
+ #include <unistd.h>
+-#include "test.h"
++#include <uk/test.h>
++#include "fs_essentials.h"
+ 
+-#define TEST(r, f, x, m) ( \
+-	errno=0, ((r) = (f)) == (x) || \
+-	(t_error("%s failed (" m ")\n", #f, r, x, strerror(errno)), 0) )
++#define TEST(r, f, x, m) UK_TEST_EXPECT_SNUM_EQ((f),(x))
+ 
+-#define TEST_S(s, x, m) ( \
+-	!strcmp((s),(x)) || \
+-	(t_error("[%s] != [%s] (%s)\n", s, x, m), 0) )
++#define TEST_S(s, x, m) UK_TEST_EXPECT_ZERO(strcmp(s, x))
+ 
+ static FILE *writetemp(const char *data)
+ {
+-	FILE *f = tmpfile();
++	FILE *f = fopen("/tmp/fscanf-test", "wr");
+ 	if (!f) return 0;
+ 	if (!fwrite(data, strlen(data), 1, f)) {
+ 		fclose(f);
+@@ -25,7 +22,7 @@ static FILE *writetemp(const char *data)
+ 	return f;
+ }
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, fscanf_test)
+ {
+ 	int i, x, y;
+ 	double u;
+@@ -39,7 +36,7 @@ int main(void)
+ 	if (!f) {
+ 		close(p[0]);
+ 		close(p[1]);
+-		return 1;
++		return;
+ 	}
+ 
+ 	TEST(i, write(p[1], "hello, world\n", 13), 13, "write error %d!=%d (%s)");
+@@ -56,6 +53,10 @@ int main(void)
+ 	fclose(f);
+ 	close(p[1]);
+ 
++	UK_TEST_EXPECT_ZERO((i = create_fs_for_tests()));
++	if(i)
++		return;
++
+ 	TEST(i, !!(f=writetemp("      42")), 1, "failed to make temp file");
+ 	if (f) {
+ 		x=y=-1;
+@@ -128,6 +129,5 @@ int main(void)
+ 		TEST(i, feof(f), 0, "%d != %d");
+ 		fclose(f);
+ 	}
+-
+-	return t_status;
++	UK_TEST_EXPECT_ZERO(destroy_fs());
+ }
+-- 
+2.25.1
+

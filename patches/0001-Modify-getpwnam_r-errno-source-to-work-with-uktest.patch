@@ -1,0 +1,42 @@
+From 9055436dd73d98b2bc96361f8ae8cb2f973aed41 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 11 Nov 2022 10:33:35 +0200
+Subject: [PATCH] Modify getpwnam_r-errno source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/getpwnam_r-errno.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/src/regression/getpwnam_r-errno.c b/src/regression/getpwnam_r-errno.c
+index bb8685e..8733264 100644
+--- a/src/regression/getpwnam_r-errno.c
++++ b/src/regression/getpwnam_r-errno.c
+@@ -3,15 +3,19 @@
+ 
+ #include <pwd.h>
+ #include <errno.h>
+-#include "test.h"
++#include <uk/test.h>
++#include "fs_essentials.h"
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, getpwnam_r_errno_tests)
+ {
+ 	int baderr = EOWNERDEAD; // arbitrary absurd error
+ 	struct passwd *pw, pwbuf;
+ 	char buf[1024];
+ 	errno = baderr;
+-	if (getpwnam_r("nonsensical_user", &pwbuf, buf, sizeof buf, &pw) == baderr)
+-		t_error("getpwnam_r used preexisting errno for nonexisting user\n");
+-	return t_status;
++	int res;
++	UK_TEST_EXPECT_ZERO((res = create_fs_for_tests()));
++	if(res)
++		return;
++	UK_TEST_ASSERT(getpwnam_r("nonsensical_user", &pwbuf, buf, sizeof buf, &pw) != baderr);
++	UK_TEST_EXPECT_ZERO(destroy_fs());
+ }
+-- 
+2.25.1
+

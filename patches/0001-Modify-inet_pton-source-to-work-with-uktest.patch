@@ -1,0 +1,121 @@
+From 75419db59d85c2a0fc10b64dd436834fb04cec8d Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 10 Nov 2022 23:47:40 +0200
+Subject: [PATCH] Modify inet_pton source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/inet_pton.c | 56 +++++++++++++++++---------------------
+ 1 file changed, 25 insertions(+), 31 deletions(-)
+
+diff --git a/src/functional/inet_pton.c b/src/functional/inet_pton.c
+index b31faed..4e28345 100644
+--- a/src/functional/inet_pton.c
++++ b/src/functional/inet_pton.c
+@@ -3,7 +3,7 @@
+ #include <string.h>
+ #include <stdio.h>
+ #include <arpa/inet.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ static int digit(int c)
+ {
+@@ -33,23 +33,22 @@ static void tohex(char *d, void *s, int n)
+ 	char txtaddr[60]={0}; \
+ 	\
+ 	r=inet_pton(AF_INET6,src,binaddr); \
+-	if (r!=ret) \
+-		t_error("inet_pton(AF_INET6, "#src", addr) returned %d, want %d\n", r, ret); \
++	\
++	UK_TEST_ASSERTF((r==ret), "inet_pton(AF_INET6,%s,%s) = %d", src, binaddr); \
++	\
+ 	if (ret!=1) break; \
+ 	tohex(hexaddr,binaddr,16); \
+-	if (strcmp(hexaddr,hex)) \
+-		t_error("inet_pton(AF_INET6, "#src", addr) got addr %s, want %s\n", hexaddr, hex); \
++	\
++	UK_TEST_ASSERTF(strcmp(hexaddr,hex) == 0, "strcmp(%s, %s)", hexaddr, hex); \
+ 	\
+ 	tobin(binaddr,hex); \
+-	if (inet_ntop(AF_INET6,binaddr,txtaddr,sizeof txtaddr)!=txtaddr) \
+-		t_error("inet_ntop(AF_INET6, <"#hex">, buf, size) did not return buf\n"); \
+-	if (inet_pton(AF_INET6,txtaddr,binaddr)!=1) \
+-		t_error("inet_ntop(AF_INET6, <"#hex">, buf, size) got %s, it is rejected by inet_pton\n", txtaddr); \
++	UK_TEST_ASSERTF(inet_ntop(AF_INET6,binaddr,txtaddr,sizeof txtaddr)==txtaddr, "inet_ntop(AF_INET6, %s, %s, %d) == %s", binaddr,txtaddr,sizeof txtaddr, txtaddr); \
++	UK_TEST_ASSERTF(inet_pton(AF_INET6,txtaddr,binaddr)==1, "inet_pton(AF_INET6, %s, %s) == 1", txtaddr, binaddr); \
++	\
+ 	tohex(hexaddr,binaddr,16); \
+-	if (strcmp(hexaddr,hex)) \
+-		t_error("inet_ntop(AF_INET6, <"#hex">, buf, size) got %s that is %s, want %s\n", txtaddr, hexaddr, hex); \
+-	if (strncmp(hex,"00000000000000000000ffff",24)==0 && !strchr(txtaddr,'.')) \
+-		t_error("inet_ntop(AF_INET6, <"#hex">, buf, size) got %s, should be ipv4 mapped\n", txtaddr); \
++	UK_TEST_ASSERTF(strcmp(hexaddr,hex) == 0, "strcmp(hexaddr,hex)", hexaddr, hex); \
++	UK_TEST_ASSERT(!(strncmp(hex,"00000000000000000000ffff",24)==0 && !strchr(txtaddr,'.'))); \
++	\
+ }while(0);
+ 
+ // ret and hex are the results of inet_pton and inet_addr respectively
+@@ -62,40 +61,36 @@ static void tohex(char *d, void *s, int n)
+ 	\
+ 	a=inet_addr(src); \
+ 	tohex(buf,&a,4); \
+-	if (strcmp(buf,hex)) \
+-		t_error("inet_addr("#src") returned %s, want %s\n", buf, hex); \
++	\
++	UK_TEST_ASSERTF(strcmp(buf,hex) == 0, "strcmp(%s,%s) == 0", buf , hex); \
+ 	\
+ 	r=inet_pton(AF_INET,src,&a); \
+-	if (r!=ret) \
+-		t_error("inet_pton(AF_INET, "#src", addr) returned %d, want %d\n", r, ret); \
++	\
++	UK_TEST_ASSERTF(r==ret, "inet_pton(AF_INET,%s,&a)", src); \
+ 	\
+ 	if (ret!=1) break; \
+ 	\
+ 	tohex(buf,&a,4); \
+-	if (strcmp(buf,hex)) \
+-		t_error("inet_pton(AF_INET, "#src", addr) got addr %s, want %s\n", buf, hex); \
++	\
++	UK_TEST_ASSERTF(strcmp(buf,hex) == 0, "strcmp(%s, %s) == 0", buf, hex); \
+ 	\
+ 	tobin(&a,hex); \
+-	if (inet_ntop(AF_INET,&a,buf,sizeof buf)!=buf) \
+-		t_error("inet_ntop(AF_INET, <"#hex">, buf, size) did not return buf\n"); \
+-	if (strcmp(buf,src)) \
+-		t_error("inet_ntop(AF_INET, <"#hex">, buf, size) got %s, want %s\n", buf, src); \
++	\
++	UK_TEST_ASSERTF(inet_ntop(AF_INET,&a,buf,sizeof buf)==buf, "inet_ntop(AF_INET,&a,%s,%d)==%s", buf, sizeof buf, buf); \
++	UK_TEST_EXPECT_ZERO(strcmp(buf,src)); \
+ 	\
+ 	in.s_addr = a; \
+ 	p=inet_ntoa(in); \
+-	if (strcmp(p,src)) \
+-		t_error("inet_ntoa(<"#hex">) returned %s, want %s\n", p, src); \
++	UK_TEST_EXPECT_ZERO(strcmp(p,src)); \
+ }while(0);
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, inet_pton_test)
+ {
+ 
+ // errors
+-if (inet_pton(12345, "", 0) != -1 || errno != EAFNOSUPPORT)
+-	t_error("inet_pton(12345,,) should fail with EAFNOSUPPORT, got %s\n", strerror(errno));
++UK_TEST_ASSERT(!(inet_pton(12345, "", 0) != -1 || errno != EAFNOSUPPORT));
+ errno=0;
+-if (inet_ntop(AF_INET,"xxxx","",0) != 0 || errno != ENOSPC)
+-	t_error("inet_ntop(,,0,0) should fail with ENOSPC, got %s\n", strerror(errno));
++UK_TEST_ASSERT(!(inet_ntop(AF_INET,"xxxx","",0) != 0 || errno != ENOSPC));
+ errno=0;
+ 
+ // dotted-decimal notation
+@@ -156,5 +151,4 @@ V6("0::ffff:c0a8:5e4", 1, "00000000000000000000ffffc0a805e4")
+ V6("::0::ffff:c0a8:5e4", 0, "")
+ V6("c0a8", 0, "")
+ 
+-return t_status;
+ }
+-- 
+2.25.1
+

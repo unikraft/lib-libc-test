@@ -1,6 +1,6 @@
-From 20b7cb92a5ed671bde8117a3d068a9c6b96edf92 Mon Sep 17 00:00:00 2001
+From e807e400a815103725a54a3202942fa5b420b1f2 Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Tue, 25 Oct 2022 10:01:57 +0300
+Date: Thu, 10 Nov 2022 08:11:15 +0200
 Subject: [PATCH] Modify string_strchr source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
  1 file changed, 7 insertions(+), 9 deletions(-)
 
 diff --git a/src/functional/string_strchr.c b/src/functional/string_strchr.c
-index 4b1e063..310c243 100644
+index 4b1e063..36494a7 100644
 --- a/src/functional/string_strchr.c
 +++ b/src/functional/string_strchr.c
 @@ -1,5 +1,7 @@
@@ -27,7 +27,7 @@ index 4b1e063..310c243 100644
  		char *q = strchr(p, c); \
 -		if (q) \
 -			t_error("strchr(%s,%s) with align=%d returned str+%d, wanted 0\n", #s, #c, align, q-p); \
-+		UK_TEST_EXPECT_NULL(q); \
++		UK_TEST_ASSERTF((q == NULL), "Strchr returned NULL."); \
  	} \
  }
  
@@ -39,8 +39,8 @@ index 4b1e063..310c243 100644
 -			t_error("strchr(%s,%s) with align=%d returned 0, wanted str+%d\n", #s, #c, align, n); \
 -		else if (q - p != n) \
 -			t_error("strchr(%s,%s) with align=%d returned str+%d, wanted str+%d\n", #s, #c, align, q-p, n); \
-+		UK_TEST_EXPECT_NOT_NULL(q); \
-+		UK_TEST_ASSERT((q - p == n)); \
++		UK_TEST_ASSERTF((q != NULL), "Strchr found an occurence at address: %p", q); \
++		UK_TEST_ASSERTF((q - p == n), "Returned correctly the first occurence of character."); \
  	} \
  }
  

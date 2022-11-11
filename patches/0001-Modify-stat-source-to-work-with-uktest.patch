@@ -1,0 +1,73 @@
+From b64a338704b99a975d3cfc6985f4d6ae3c08490e Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 11 Nov 2022 10:21:55 +0200
+Subject: [PATCH] Modify stat source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/stat.c | 26 +++++++++++++++++---------
+ 1 file changed, 17 insertions(+), 9 deletions(-)
+
+diff --git a/src/functional/stat.c b/src/functional/stat.c
+index d743fc1..0c2ad41 100644
+--- a/src/functional/stat.c
++++ b/src/functional/stat.c
+@@ -5,17 +5,24 @@
+ #include <time.h>
+ #include <stdint.h>
+ #include <unistd.h>
+-#include "test.h"
++#include <uk/test.h>
++#include "fs_essentials.h"
+ 
+-#define TEST(c, ...) ((c) ? 1 : (t_error(#c" failed: " __VA_ARGS__),0))
++#define TEST(c, ...) UK_TEST_ASSERT((c))
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, stat_tests)
+ {
+ 	struct stat st;
+ 	FILE *f;
+ 	time_t t;
++	int res;
+ 
+-	if (TEST(stat(".",&st)==0, "errno = %s\n", strerror(errno))) {
++	UK_TEST_EXPECT_ZERO((res = create_fs_for_tests()));
++	if(res)
++		return;
++
++	TEST(stat(".",&st)==0, "errno = %s\n", strerror(errno));
++	if (stat(".",&st)==0) {
+ 		TEST(S_ISDIR(st.st_mode), "\n");
+ 		TEST(st.st_nlink>0, "%ju\n", (uintmax_t)st.st_nlink);
+ 		t = time(0);
+@@ -24,20 +31,21 @@ int main(void)
+ 		TEST(st.st_atime<=t, "%jd > %jd\n", (intmax_t)st.st_atime, (intmax_t)t);
+ 	}
+ 
+-	if (TEST(stat("/dev/null",&st)==0, "errno = %s\n", strerror(errno))) {
++	TEST(stat("/",&st)==0, "errno = %s\n", strerror(errno));
++	if (stat("/",&st)==0) {
+ 		TEST(S_ISCHR(st.st_mode), "\n");
+ 	}
+ 
+-	if ((f = tmpfile())) {
++	if ((f = fopen("/tmp/stat-test", "wr"))) {
+ 		fputs("hello", f);
+ 		fflush(f);
+-		if (TEST(fstat(fileno(f),&st)==0, "errnp = %s\n", strerror(errno))) {
++		TEST(fstat(fileno(f),&st)==0, "errnp = %s\n", strerror(errno));
++		if (fstat(fileno(f),&st)==0) {
+ 			TEST(st.st_uid==geteuid(), "%d vs %d\n", (int)st.st_uid, (int)geteuid());
+ 			TEST(st.st_gid==getegid(), "%d vs %d\n", (int)st.st_uid, (int)geteuid());
+ 			TEST(st.st_size==5, "%jd vs 5\n", (intmax_t)st.st_size);
+ 		}
+ 		fclose(f);
+ 	}
+-
+-	return t_status;
++	UK_TEST_EXPECT_ZERO(destroy_fs());
+ }
+-- 
+2.25.1
+

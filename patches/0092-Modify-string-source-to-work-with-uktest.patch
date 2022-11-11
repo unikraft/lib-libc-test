@@ -1,15 +1,15 @@
-From 50ac825035a98dc690371fb0f8b38f1b2dbef02b Mon Sep 17 00:00:00 2001
+From a2582054b31fd0c3599a2f94d9b7384aaea72531 Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Tue, 25 Oct 2022 10:15:05 +0300
+Date: Tue, 8 Nov 2022 23:13:51 +0200
 Subject: [PATCH] Modify string source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
 ---
- src/functional/string.c | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+ src/functional/string.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
 diff --git a/src/functional/string.c b/src/functional/string.c
-index 682a1c7..73e92ff 100644
+index 682a1c7..7850b9d 100644
 --- a/src/functional/string.c
 +++ b/src/functional/string.c
 @@ -2,7 +2,7 @@
@@ -21,26 +21,30 @@ index 682a1c7..73e92ff 100644
  
  /* r = place to store result
   * f = function call to test (or any expression)
-@@ -10,15 +10,11 @@
+@@ -10,15 +10,15 @@
   * m = message to print on failure (with formats for r & x)
  **/
  
 -#define TEST(r, f, x, m) ( \
 -	((r) = (f)) == (x) || \
 -	(t_error("%s failed (" m ")\n", #f, r, x), 0) )
-+#define TEST(r, f, x, m) UK_TEST_ASSERT(((r) = (f)) == (x))
++#define TEST(r, f, x, m) \
++	({ \
++	r = f; \
++	UK_TEST_ASSERT(((r) == (x))); \
++	}) 
  
 -#define TEST_S(s, x, m) ( \
 -	!strcmp((s),(x)) || \
 -	(t_error("[%s] != [%s] (%s)\n", s, x, m), 0) )
-+#define TEST_S(s, x, m) UK_TEST_EXPECT_ZERO(strcmp((s), (x)))
++#define TEST_S(s, x, m) UK_TEST_ASSERTF((strcmp((s), (x)) == 0), "strcmp((%s), (%s)) returned 0.", s, x)
  
 -int main(void)
 +UK_TESTCASE(uk_libc_testsuite, string_tests)
  {
  	char b[32];
  	char *s;
-@@ -112,5 +108,4 @@ int main(void)
+@@ -112,5 +112,4 @@ int main(void)
  	TEST(i, strlcat(b, "123", 3), 6, "length %d != %d");
  	TEST_S(b, "abc", "strlcat result");
  

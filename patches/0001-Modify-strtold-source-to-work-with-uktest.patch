@@ -1,0 +1,45 @@
+From dbb5936c150c514b099d5137e2874ba5662c2a82 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 10 Nov 2022 10:24:12 +0200
+Subject: [PATCH] Modify strtold source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/strtold.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/src/functional/strtold.c b/src/functional/strtold.c
+index 6ea1672..40909b4 100644
+--- a/src/functional/strtold.c
++++ b/src/functional/strtold.c
+@@ -2,7 +2,7 @@
+ #include <stdlib.h>
+ #include <math.h>
+ #include <float.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+ #define length(x) (sizeof(x) / sizeof *(x))
+ 
+@@ -79,7 +79,7 @@ static struct {
+ #endif
+ };
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, strtold_tests)
+ {
+ 	int i;
+ 	long double x;
+@@ -87,8 +87,6 @@ int main(void)
+ 
+ 	for (i = 0; i < length(t); i++) {
+ 		x = strtold(t[i].s, &p);
+-		if (x != t[i].f)
+-			t_error("strtold(\"%s\") want %La got %La\n", t[i].s, t[i].f, x);
++		UK_TEST_ASSERTF((x == t[i].f), "strtold(%.7s, &p) == %.7lf", t[i].s, x);
+ 	}
+-	return t_status;
+ }
+-- 
+2.25.1
+

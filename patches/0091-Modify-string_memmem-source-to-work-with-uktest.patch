@@ -1,6 +1,6 @@
-From 65cb1b960782f0068e0dc075c20b4b6d8c4426d1 Mon Sep 17 00:00:00 2001
+From 4660089c71629ef6006ebc8f8d23abefb5c04f08 Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Tue, 25 Oct 2022 00:14:04 +0300
+Date: Thu, 10 Nov 2022 08:32:41 +0200
 Subject: [PATCH] Modify string_memmem source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
  1 file changed, 5 insertions(+), 11 deletions(-)
 
 diff --git a/src/functional/string_memmem.c b/src/functional/string_memmem.c
-index 608eadf..a70b0dc 100644
+index 608eadf..2ca66cd 100644
 --- a/src/functional/string_memmem.c
 +++ b/src/functional/string_memmem.c
 @@ -2,26 +2,22 @@
@@ -25,7 +25,7 @@ index 608eadf..a70b0dc 100644
 -	if (q) \
 -		t_error("memmem("#s" "#tail", %d, "#sub", %d) returned str+%d, wanted 0\n",\
 -			strlen(s), strlen(sub), q-p); \
-+	UK_TEST_EXPECT_NULL(q); \
++	UK_TEST_ASSERTF((q == NULL), "Memmem returned NULL."); \
  }
  
  #define T(s, sub, n) { \
@@ -35,8 +35,8 @@ index 608eadf..a70b0dc 100644
 -		t_error("memmem(%s,%s) returned 0, wanted str+%d\n", #s, #sub, n); \
 -	else if (q - p != n) \
 -		t_error("memmem(%s,%s) returned str+%d, wanted str+%d\n", #s, #sub, q-p, n); \
-+	UK_TEST_EXPECT_NOT_ZERO(q); \
-+	UK_TEST_ASSERT(q - p == n); \
++	UK_TEST_ASSERTF((q != NULL), "Memmem found a substring at address %p.", q); \
++	UK_TEST_ASSERTF((q - p == n), "Memmem returned the correct position."); \
  }
  
 -int main(void)

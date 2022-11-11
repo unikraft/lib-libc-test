@@ -1,0 +1,66 @@
+From 2887ba669f6009d1a7c8acc44c6c4b1ef70b954e Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 11 Nov 2022 09:50:04 +0200
+Subject: [PATCH] Modify fcntl source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/fcntl.c | 22 ++++++++++++++--------
+ 1 file changed, 14 insertions(+), 8 deletions(-)
+
+diff --git a/src/functional/fcntl.c b/src/functional/fcntl.c
+index 485c00c..98ea829 100644
+--- a/src/functional/fcntl.c
++++ b/src/functional/fcntl.c
+@@ -4,12 +4,12 @@
+ #include <errno.h>
+ #include <string.h>
+ #include <sys/wait.h>
+-#include "test.h"
++#include <uk/test.h>
++#include "fs_essentials.h"
+ 
+-#define TEST(c, ...) ((c) ? 1 : (t_error(#c" failed: " __VA_ARGS__),0))
+-#define TESTE(c) (errno=0, TEST(c, "errno = %s\n", strerror(errno)))
++#define TEST(c, ...) UK_TEST_ASSERT(c)
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, fcntl_tests)
+ {
+ 	struct flock fl = {0};
+ 	FILE *f;
+@@ -17,14 +17,21 @@ int main(void)
+ 	pid_t pid;
+ 	int status;
+ 
+-	if (!TESTE(f=tmpfile())) return t_status;
++	UK_TEST_EXPECT_ZERO((fd = create_fs_for_tests()));
++	if(fd)
++		return;
++	errno = 0;
++	f=fopen("/tmp/fcntl-test", "wr");
++	UK_TEST_EXPECT_NOT_NULL(f);
++	if (!f) return;
+ 	fd = fileno(f);
+ 
+ 	fl.l_type = F_WRLCK;
+ 	fl.l_whence = SEEK_SET;
+ 	fl.l_start = 0;
+ 	fl.l_len = 0;
+-	TESTE(fcntl(fd, F_SETLK, &fl)==0);
++	errno = 0;
++	UK_TEST_EXPECT_ZERO(fcntl(fd, F_SETLK, &fl));
+ 
+ 	pid = fork();
+ 	if (!pid) {
+@@ -44,6 +51,5 @@ int main(void)
+ 	TEST(status==0, "child failed to detect lock held by parent\n");
+ 
+ 	fclose(f);
+-
+-	return t_status;
++	UK_TEST_EXPECT_ZERO(destroy_fs());
+ }
+-- 
+2.25.1
+

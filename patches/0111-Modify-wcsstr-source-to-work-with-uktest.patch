@@ -1,6 +1,6 @@
-From a10df3b892ba832079d2640b6ec73156d86247e9 Mon Sep 17 00:00:00 2001
+From 51b14113c3d25066223b1852e94614a6bac08201 Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Tue, 25 Oct 2022 14:44:31 +0300
+Date: Tue, 8 Nov 2022 23:04:39 +0200
 Subject: [PATCH] Modify wcsstr source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
  1 file changed, 5 insertions(+), 10 deletions(-)
 
 diff --git a/src/functional/wcsstr.c b/src/functional/wcsstr.c
-index 73be607..56526c6 100644
+index 73be607..40aa79f 100644
 --- a/src/functional/wcsstr.c
 +++ b/src/functional/wcsstr.c
 @@ -1,23 +1,20 @@
@@ -22,7 +22,7 @@ index 73be607..56526c6 100644
  	wchar_t *q = wcsstr(p, sub); \
 -	if (q) \
 -		t_error("wcsstr(%s,%s) returned str+%d, wanted 0\n", #s, #sub, q-p); \
-+	UK_TEST_EXPECT_NULL(q); \
++	UK_TEST_ASSERTF((q==NULL), "Wcsstr returned NULL."); \
  }
  
  #define T(s, sub, n) { \
@@ -32,8 +32,8 @@ index 73be607..56526c6 100644
 -		t_error("wcsstr(%s,%s) returned 0, wanted str+%d\n", #s, #sub, n); \
 -	else if (q - p != n) \
 -		t_error("wcsstr(%s,%s) returned str+%d, wanted str+%d\n", #s, #sub, q-p, n); \
-+	UK_TEST_EXPECT_NOT_NULL(q); \
-+	UK_TEST_ASSERT((q - p == n)); \
++	UK_TEST_ASSERTF((q != NULL), "Wcsstr returned %p", p); \
++	UK_TEST_ASSERTF((q - p == n), "Wcsstr returned the correct position %d", n); \
  }
  
 -int main(void)

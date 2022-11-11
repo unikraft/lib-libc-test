@@ -1,0 +1,35 @@
+From f53e350866546d346921442908231de25a8ee775 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Thu, 10 Nov 2022 09:18:35 +0200
+Subject: [PATCH] Modify memmem-oob-read source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/memmem-oob-read.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/src/regression/memmem-oob-read.c b/src/regression/memmem-oob-read.c
+index 0694bfe..4825b98 100644
+--- a/src/regression/memmem-oob-read.c
++++ b/src/regression/memmem-oob-read.c
+@@ -4,14 +4,12 @@
+ #define _GNU_SOURCE
+ #endif
+ #include <string.h>
+-#include "test.h"
++#include <uk/test.h>
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, memmem_oob_read_tests)
+ {
+ 	const unsigned char haystack[] = { 0,0,0,0,0,0,0,1,2 };
+ 	const unsigned char needle[] =   { 0,0,0,0,0,0,0,1,3 };
+ 	unsigned char *p = memmem(haystack, 8, needle, 8);
+-	if (!p)
+-		t_error("memmem(A,8,A,8) returned 0, want A\n");
+-	return t_status;
++	UK_TEST_ASSERTF((p != NULL), "memmem(haystack, 8, needle, 8) returned %p", p);
+ }
+-- 
+2.25.1
+

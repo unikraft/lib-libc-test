@@ -1,0 +1,78 @@
+From b04859db3759685fe2cde9f52e3fd176c93927b9 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 11 Nov 2022 11:10:44 +0200
+Subject: [PATCH] Modify fwscanf source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/functional/fwscanf.c | 25 ++++++++++++-------------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
+
+diff --git a/src/functional/fwscanf.c b/src/functional/fwscanf.c
+index 18b68e8..da6e025 100644
+--- a/src/functional/fwscanf.c
++++ b/src/functional/fwscanf.c
+@@ -4,41 +4,41 @@
+ #include <limits.h>
+ #include <unistd.h>
+ #include <wchar.h>
+-#include "test.h"
++#include <uk/test.h>
++#include "fs_essentials.h"
+ 
+-#define TEST(r, f, x, m) ( \
+-	errno=0, ((r) = (f)) == (x) || \
+-	(t_error("%s failed (" m ")\n", #f, r, x, strerror(errno)), 0) )
++#define TEST(r, f, x, m) UK_TEST_EXPECT_SNUM_EQ((f),(x))
++
++#define TEST_S(s, x, m) UK_TEST_EXPECT_ZERO(strcmp(s, x))
+ 
+-#define TEST_S(s, x, m) ( \
+-	!strcmp((s),(x)) || \
+-	(t_error("[%s] != [%s] (%s)\n", s, x, m), 0) )
+ 
+ static FILE *writetemp(const char *data)
+ {
+-	FILE *f = tmpfile();
++	FILE *f = fopen("/tmp/fwscanf-test", "wr");
+ 	size_t n = strlen(data);
+ 	if (!f) return 0;
+ 	if (write(fileno(f), data, n) != n) {
+-		t_error("write: %s\n", strerror(errno));
+ 		fclose(f);
+ 		return 0;
+ 	}
+ 	if (lseek(fileno(f), 0, SEEK_SET) != 0) {
+-		t_error("lseek: %s\n", strerror(errno));
+ 		fclose(f);
+ 		return 0;
+ 	}
+ 	return f;
+ }
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, fwscanf_test)
+ {
+ 	int i, x, y;
+ 	double u;
+ 	char a[100], b[100];
+ 	FILE *f;
+ 
++	UK_TEST_EXPECT_ZERO((i = create_fs_for_tests()));
++	if(i)
++		return;
++
+ 	TEST(i, !!(f=writetemp("      42")), 1, "failed to make temp file");
+ 	if (f) {
+ 		x=y=-1;
+@@ -111,6 +111,5 @@ int main(void)
+ 		TEST(i, feof(f), 0, "%d != %d");
+ 		fclose(f);
+ 	}
+-
+-	return t_status;
++	UK_TEST_EXPECT_ZERO(destroy_fs());
+ }
+-- 
+2.25.1
+

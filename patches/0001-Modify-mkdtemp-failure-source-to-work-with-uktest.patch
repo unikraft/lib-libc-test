@@ -1,0 +1,55 @@
+From b5e5b75ee7ba9a4afb69eb43ded4106eb0531f44 Mon Sep 17 00:00:00 2001
+From: Florin Postolache <florin.postolache80@gmail.com>
+Date: Fri, 11 Nov 2022 11:24:02 +0200
+Subject: [PATCH] Modify mkdtemp-failure source to work with uktest
+
+Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
+---
+ src/regression/mkdtemp-failure.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
+
+diff --git a/src/regression/mkdtemp-failure.c b/src/regression/mkdtemp-failure.c
+index fa54c13..89f4c5d 100644
+--- a/src/regression/mkdtemp-failure.c
++++ b/src/regression/mkdtemp-failure.c
+@@ -7,24 +7,26 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <errno.h>
+-#include "test.h"
++#include <uk/test.h>
++#include "fs_essentials.h"
+ 
+ char *mkdtemp(char *);
+ 
+-#define S "/dev/null/fooXXXX"
++#define S "/tmp/fooXXXX"
+ 
+-int main(void)
++UK_TESTCASE(uk_libc_testsuite, mkdtemp_failure_tests)
+ {
+ 	char p[] = S;
+ 	char *r;
++	int i;
+ 
++	UK_TEST_EXPECT_ZERO((i = create_fs_for_tests()));
++	if(i)
++		return;
++	
+ 	r = mkdtemp(p);
+-	if (r)
+-		t_error("mkdtemp(" S ") did not fail\n");
+-	if (memcmp(p, S, sizeof p) != 0)
+-		t_error("mkdtemp(" S ") modified the template: %s\n", p);
+-	if (r == 0 && errno != EINVAL)
+-		t_error("mkdtemp(" S ") failed with %d [%s] instead of %d [%s]\n",
+-			errno, strerror(errno), EINVAL, strerror(EINVAL));
+-	return t_status;
++	UK_TEST_EXPECT_NULL(r);
++	UK_TEST_EXPECT_ZERO(memcmp(p, S, sizeof p));
++	UK_TEST_ASSERT(!(r == 0 && errno != EINVAL));
++	UK_TEST_EXPECT_ZERO(destroy_fs());
+ }
+-- 
+2.25.1
+
