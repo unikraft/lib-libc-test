@@ -24,7 +24,7 @@ index 360e491..ac290ac 100644
 +#define TEST(c, ...) UK_TEST_ASSERT((c))
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, sem_open_tests)
++UK_TESTCASE(uk_libc_semaphore_tests, sem_open_tests)
  {
  	char buf[100];
  	struct timespec ts;

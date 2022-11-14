@@ -83,7 +83,7 @@ index 46e0fef..abf4b48 100644
  }
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, time_tests)
++UK_TESTCASE(uk_libc_time_tests, time_tests)
  {
  	time_t t;
 -

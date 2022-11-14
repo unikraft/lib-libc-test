@@ -26,7 +26,7 @@ index 0f4c370..f0a3736 100644
  }
  
 -int main()
-+UK_TESTCASE(uk_libc_testsuite, search_insque_tests)
++UK_TESTCASE(uk_libc_structure_search_tests, search_insque_tests)
  {
  	struct q *q = new(0);
  	struct q *p;

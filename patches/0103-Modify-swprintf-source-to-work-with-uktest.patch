@@ -36,7 +36,7 @@ index 243fae8..f01702e 100644
  };
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, swprintf_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, swprintf_tests)
  {
  	int i, j;
  	wchar_t b[500];

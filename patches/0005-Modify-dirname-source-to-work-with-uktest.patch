@@ -29,7 +29,7 @@ index 766d467..493bb5d 100644
  }
  
 -int main()
-+UK_TESTCASE(uk_libc_testsuite, dirname_tests)
++UK_TESTCASE(uk_libc_string_tests, dirname_tests)
  {
 -	if (strcmp(dirname(0), ".") != 0)
 -		t_error("dirname(0) returned \"%s\"; expected \".\"\n", dirname(0));

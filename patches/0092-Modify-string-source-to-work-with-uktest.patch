@@ -40,7 +40,7 @@ index 682a1c7..7850b9d 100644
 +#define TEST_S(s, x, m) UK_TEST_ASSERTF((strcmp((s), (x)) == 0), "strcmp((%s), (%s)) returned 0.", s, x)
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, string_tests)
++UK_TESTCASE(uk_libc_string_tests, string_tests)
  {
  	char b[32];
  	char *s;

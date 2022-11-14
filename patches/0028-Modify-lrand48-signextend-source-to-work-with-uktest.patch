@@ -20,7 +20,7 @@ index dedd515..555597a 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, lrand48_signextend_tests)
++UK_TESTCASE(uk_libc_random_tests, lrand48_signextend_tests)
  {
  	long r;
  	r = lrand48();

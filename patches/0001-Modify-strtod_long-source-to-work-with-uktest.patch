@@ -20,7 +20,7 @@ index fa5ac17..6bbb1f2 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, strtod_long_tests)
++UK_TESTCASE(uk_libc_conversion_tests, strtod_long_tests)
  {
  	double x, want = .1111111111111111111111;
  	char buf[40000];

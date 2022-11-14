@@ -96,7 +96,7 @@ index b31faed..4e28345 100644
  }while(0);
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, inet_pton_test)
++UK_TESTCASE(uk_libc_network_tests, inet_pton_test)
  {
  
  // errors

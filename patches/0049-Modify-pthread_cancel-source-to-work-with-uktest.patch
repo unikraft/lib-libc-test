@@ -32,7 +32,7 @@ index 26db8f3..735b83a 100644
  }
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, pthread_cancel_test)
++UK_TESTCASE(uk_libc_pthread_tests, pthread_cancel_test)
  {
  	pthread_t td;
  	sem_t sem1;

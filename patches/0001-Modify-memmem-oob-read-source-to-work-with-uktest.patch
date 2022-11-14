@@ -20,7 +20,7 @@ index 0694bfe..4825b98 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, memmem_oob_read_tests)
++UK_TESTCASE(uk_libc_string_tests, memmem_oob_read_tests)
  {
  	const unsigned char haystack[] = { 0,0,0,0,0,0,0,1,2 };
  	const unsigned char needle[] =   { 0,0,0,0,0,0,0,1,3 };

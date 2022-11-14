@@ -37,7 +37,7 @@ index 54e0fd5..4eee866 100644
  }
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, string_strstr_tests)
++UK_TESTCASE(uk_libc_string_tests, string_strstr_tests)
  {
  	N("", "a")
  	N("a", "aa")

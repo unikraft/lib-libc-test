@@ -45,7 +45,7 @@ index 0dbd619..6b6fdda 100644
  };
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, udiv_tests)
++UK_TESTCASE(uk_libc_udiv_tests, udiv_tests)
  {
  	uint64_t x, y, div, mod;
  	int i;

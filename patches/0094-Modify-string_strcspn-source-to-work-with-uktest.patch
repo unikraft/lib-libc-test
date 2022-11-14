@@ -28,7 +28,7 @@ index 88df383..87ffe01 100644
  }
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, string_strcspn_tests)
++UK_TESTCASE(uk_libc_string_tests, string_strcspn_tests)
  {
  	int i;
  	char a[128];

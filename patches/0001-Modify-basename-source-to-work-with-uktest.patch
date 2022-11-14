@@ -30,7 +30,7 @@ index 96a470e..313193a 100644
  
 -int main()
 +
-+UK_TESTCASE(uk_libc_testsuite, basename_tests)
++UK_TESTCASE(uk_libc_string_tests, basename_tests)
  {
 -	if (strcmp(basename(0), ".") != 0)
 -		t_error("basename(0) returned \"%s\"; expected \".\"\n", basename(0));

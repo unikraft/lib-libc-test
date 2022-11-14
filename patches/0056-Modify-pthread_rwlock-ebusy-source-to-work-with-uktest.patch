@@ -41,7 +41,7 @@ index 9f157a8..2180218 100644
  }
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, pthread_rwlock_ebusy_tests)
++UK_TESTCASE(uk_libc_pthread_tests, pthread_rwlock_ebusy_tests)
  {
  	pthread_t t;
  	pthread_rwlock_t rw = PTHREAD_RWLOCK_INITIALIZER;

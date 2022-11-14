@@ -170,7 +170,7 @@ ifneq ($(filter y,$(CONFIG_LIBLIBCTEST_FILE_FOLDER_TESTS) $(CONFIG_LIBUKTEST_ALL
     LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/sscanf.c
     ifeq ($(filter y,$(CONFIG_LIBNOLIBC)),)
         LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/rewind-clear-error.c
-        LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/rlimit-open-files.c
+        #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/rlimit-open-files.c
         LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/fgets-eof.c
         LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/common/utf8.c
         LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/printf-fmt-n.c

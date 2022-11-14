@@ -28,7 +28,7 @@ index 88f7561..15ebbe0 100644
 +#define TEST(c) UK_TEST_ASSERT((c))
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, fdopen_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, fdopen_tests)
  {
  	char tmp[] = "/tmp/testsuite-XXXXXX";
  	char foo[6];

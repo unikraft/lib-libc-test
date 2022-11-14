@@ -20,7 +20,7 @@ index d4e30e4..91cfa7e 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, scanf_bytes_consumed_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, scanf_bytes_consumed_tests)
  {
  	char buf[] = { 'a', 'a', 0 };
  	char dest[3];

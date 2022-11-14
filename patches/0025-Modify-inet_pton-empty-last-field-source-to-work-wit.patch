@@ -28,7 +28,7 @@ index b06fa11..4a333bb 100644
 -}
 -
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, inet_pton_empty_last_field_tests)
++UK_TESTCASE(uk_libc_network_tests, inet_pton_empty_last_field_tests)
  {
  	char s[50], sw[50];
  	unsigned char buf[16];

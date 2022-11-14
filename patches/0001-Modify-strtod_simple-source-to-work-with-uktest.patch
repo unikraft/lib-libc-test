@@ -31,7 +31,7 @@ index 53cf93e..924a379 100644
 +#define TEST(r, f, x, m) UK_TEST_ASSERTF(((f) == (x)), "strtod(%.7s, 0) == %.7lf", m, x)
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, strtod_simple_tests)
++UK_TESTCASE(uk_libc_conversion_tests, strtod_simple_tests)
  {
  	int i;
  	double d, d2;

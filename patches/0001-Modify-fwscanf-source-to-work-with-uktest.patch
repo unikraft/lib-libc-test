@@ -51,7 +51,7 @@ index 18b68e8..da6e025 100644
  }
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, fwscanf_test)
++UK_TESTCASE(uk_libc_file_folder_tests, fwscanf_test)
  {
  	int i, x, y;
  	double u;

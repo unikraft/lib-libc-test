@@ -20,7 +20,7 @@ index cd9023c..2d19f00 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, inet_ntop_v4mapped_tests)
++UK_TESTCASE(uk_libc_network_tests, inet_ntop_v4mapped_tests)
  {
  	char *expect = "::ffff:192.168.0.1";
  	char buf[100];

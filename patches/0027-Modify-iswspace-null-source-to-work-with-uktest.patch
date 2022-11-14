@@ -20,7 +20,7 @@ index 4afb89b..fcf5f72 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, iswspace_null_tests)
++UK_TESTCASE(uk_libc_string_tests, iswspace_null_tests)
  {
 -	if (iswspace(0)!=0)
 -		t_error("iswspace(0) returned non-zero\n");

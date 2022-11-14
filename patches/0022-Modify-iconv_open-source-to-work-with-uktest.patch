@@ -20,7 +20,7 @@ index 8f6b285..11315e2 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, iconv_open_test)
++UK_TESTCASE(uk_libc_iconv_tests, iconv_open_test)
  {
  	iconv_t cd;
  	char buf[100];

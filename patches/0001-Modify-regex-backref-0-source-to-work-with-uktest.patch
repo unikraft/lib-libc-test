@@ -20,7 +20,7 @@ index 289be3b..51dd3c4 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, regex_backref_tests)
++UK_TESTCASE(uk_libc_regex_tests, regex_backref_tests)
  {
  	char buf[200];
  	char pat[] = "a\\0";

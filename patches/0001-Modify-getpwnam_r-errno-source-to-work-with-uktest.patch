@@ -21,7 +21,7 @@ index bb8685e..8733264 100644
 +#include "fs_essentials.h"
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, getpwnam_r_errno_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, getpwnam_r_errno_tests)
  {
  	int baderr = EOWNERDEAD; // arbitrary absurd error
  	struct passwd *pw, pwbuf;

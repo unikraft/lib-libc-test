@@ -39,7 +39,7 @@ index 0d30f02..cb3a004 100644
  }
  
 -static void many_waiters()
-+UK_TESTCASE(uk_libc_testsuite, sem_init_many_waiters_tests)
++UK_TESTCASE(uk_libc_semaphore_tests, sem_init_many_waiters_tests)
  {
  	pthread_t t[3];
  	sem_t s[2];
@@ -65,7 +65,7 @@ index 0d30f02..cb3a004 100644
  }
  
 -static void single_thread()
-+UK_TESTCASE(uk_libc_testsuite, sem_init_single_thread_tests)
++UK_TESTCASE(uk_libc_semaphore_tests, sem_init_single_thread_tests)
  {
  	struct timespec ts;
  	sem_t s;

@@ -70,7 +70,7 @@ index b5f8977..571f920 100644
  };
  
 -int main() {
-+UK_TESTCASE(uk_libc_testsuite, strptime_tests)
++UK_TESTCASE(uk_libc_time_tests, strptime_tests)
 +{
  	setenv("TZ", "UTC0", 1);
  

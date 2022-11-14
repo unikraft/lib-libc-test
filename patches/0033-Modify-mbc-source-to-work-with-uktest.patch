@@ -39,7 +39,7 @@ index 65dceaa..7614616 100644
 +	UK_TEST_ASSERT(((i = (f)) == (x)))
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, mbc_test)
++UK_TESTCASE(uk_libc_mbfunc_tests, mbc_test)
  {
  	const char *cs;
  	int i;

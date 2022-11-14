@@ -40,7 +40,7 @@ index fe8eeb5..8777c2e 100644
  }while(0)
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, fpclassify_invalid_ld80_tests)
++UK_TESTCASE(uk_libc_fpclassify_tests, fpclassify_invalid_ld80_tests)
  {
  	union {
  		long double f;

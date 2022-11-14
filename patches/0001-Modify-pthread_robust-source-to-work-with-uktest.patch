@@ -65,7 +65,7 @@ index 44f846f..897d0f4 100644
  }
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, pthread_robust_test)
++UK_TESTCASE(uk_libc_pthread_tests, pthread_robust_test)
  {
  	for (int pshared=0; pshared<=1; pshared++)
  		for (int pi=0; pi<=1; pi++)

@@ -20,7 +20,7 @@ index 192ac35..0a07258 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, rlimit_open_files_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, rlimit_open_files_tests)
  {
  	static const long lim = 42;
  	static const int r = RLIMIT_NOFILE;

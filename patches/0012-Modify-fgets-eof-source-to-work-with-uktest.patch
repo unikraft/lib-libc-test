@@ -23,7 +23,7 @@ index 4b3e41f..924d337 100644
 +#define ASSERT(c) UK_TEST_ASSERT((c))
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, fgets_eof_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, fgets_eof_tests)
  {
  	char buf[] = "test";
  	char s[10];

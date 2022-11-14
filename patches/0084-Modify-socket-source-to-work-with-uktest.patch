@@ -26,7 +26,7 @@ index b62cf98..6e148ea 100644
 +	TEST(c, "errno = %s\n", strerror(errno))
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, socket_tests)
++UK_TESTCASE(uk_libc_network_tests, socket_tests)
  {
  	struct sockaddr_in sa = { .sin_family = AF_INET };
  	int s, c, t;

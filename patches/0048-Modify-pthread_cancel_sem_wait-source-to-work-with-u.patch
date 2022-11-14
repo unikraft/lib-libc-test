@@ -32,7 +32,7 @@ index 15a5b4c..c10bacd 100644
  }
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, pthread_cancel_sem_wait_tests)
++UK_TESTCASE(uk_libc_pthread_tests, pthread_cancel_sem_wait_tests)
  {
  	pthread_t td;
  	int r;

@@ -56,7 +56,7 @@ index df257c6..d10ad9c 100644
  }
  
 -int main() {
-+UK_TESTCASE(uk_libc_testsuite, search_tsearch_tests)
++UK_TESTCASE(uk_libc_structure_search_tests, search_tsearch_tests)
 +{
  	struct e *e;
  	void *p;

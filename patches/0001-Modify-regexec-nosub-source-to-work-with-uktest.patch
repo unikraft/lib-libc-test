@@ -20,7 +20,7 @@ index 4c580d9..82c619b 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, regex_nosub_tests)
++UK_TESTCASE(uk_libc_regex_tests, regex_nosub_tests)
  {
  	regex_t re;
  	int r;

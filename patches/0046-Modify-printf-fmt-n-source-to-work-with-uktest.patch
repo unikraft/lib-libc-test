@@ -29,7 +29,7 @@ index 4d1c572..bed4739 100644
  } while(0)
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, printf_fmt_n_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, printf_fmt_n_tests)
  {
  	char buf[1024];
  	int ret;

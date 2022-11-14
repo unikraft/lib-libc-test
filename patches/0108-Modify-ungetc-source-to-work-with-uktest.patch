@@ -34,7 +34,7 @@ index 97bc3c6..8b2e263 100644
 +	})
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, ungetc_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, ungetc_tests)
  {
  	int i;
  	char a[100];

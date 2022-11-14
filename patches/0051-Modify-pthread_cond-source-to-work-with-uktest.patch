@@ -29,7 +29,7 @@ index a9a086a..fc09f7c 100644
  }
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, pthread_cond_test)
++UK_TESTCASE(uk_libc_pthread_tests, pthread_cond_test)
  {
  	pthread_t td, td1, td2, td3;
  	int r;

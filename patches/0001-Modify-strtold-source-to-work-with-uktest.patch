@@ -26,7 +26,7 @@ index 6ea1672..40909b4 100644
  };
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, strtold_tests)
++UK_TESTCASE(uk_libc_conversion_tests, strtold_tests)
  {
  	int i;
  	long double x;

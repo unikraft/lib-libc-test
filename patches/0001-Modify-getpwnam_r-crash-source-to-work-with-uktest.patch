@@ -21,7 +21,7 @@ index 1e65b7d..6a80c5e 100644
 +#include "fs_essentials.h"
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, getpwnam_r_crash_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, getpwnam_r_crash_tests)
  {
  	struct passwd *pw, pwbuf;
  	char buf[1024];

@@ -26,7 +26,7 @@ index 5afec5f..eefc0f3 100644
 +#define S "/tmp/fooXXXX"
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, mkstemp_failure_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, mkstemp_failure_tests)
  {
  	char p[] = S;
  	int r;

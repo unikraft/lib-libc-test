@@ -32,7 +32,7 @@ index 2b08691..d37d171 100644
  }
  
 -int main()
-+UK_TESTCASE(uk_libc_testsuite, printf_fmt_g_zeros_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, printf_fmt_g_zeros_tests)
  {
 -	t("%.50g", 100000000000000.5, "100000000000000.5");
 -	t("%.50g", 987654321098765.0, "987654321098765");

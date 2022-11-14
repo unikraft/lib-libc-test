@@ -20,7 +20,7 @@ index c9208af..8e2a299 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, sscanf_long_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, sscanf_long_tests)
  {
  	enum {n = 8*1024*1024};
  	char *s = malloc(n);

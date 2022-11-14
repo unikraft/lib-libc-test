@@ -38,7 +38,7 @@ index d8b6e8f..579febf 100644
  #define length(a) (sizeof(a)/sizeof*(a))
  
 -int main()
-+UK_TESTCASE(uk_libc_testsuite, tls_init_tests)
++UK_TESTCASE(uk_libc_pthread_tests, tls_init_tests)
  {
  	pthread_t t[5];
 -	int i, j;

@@ -20,7 +20,7 @@ index 70a8d44..518885a 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, regex_escaped_high_byte_tests)
++UK_TESTCASE(uk_libc_regex_tests, regex_escaped_high_byte_tests)
  {
  	char buf[200];
  	regex_t r;

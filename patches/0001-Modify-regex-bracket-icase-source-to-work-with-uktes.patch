@@ -20,7 +20,7 @@ index 82b9287..6c4895b 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, regex_bracket_icase_tests)
++UK_TESTCASE(uk_libc_regex_tests, regex_bracket_icase_tests)
  {
  	char buf[100];
  	char *pat;
