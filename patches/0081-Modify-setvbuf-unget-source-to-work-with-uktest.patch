@@ -20,7 +20,7 @@ index 8667675..6ed1866 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, setvbuf_unget_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, setvbuf_unget_tests)
  {
  	char buf[1024] = "hello world";
  	setvbuf(stdin, buf+12, _IOFBF, sizeof buf - 12);

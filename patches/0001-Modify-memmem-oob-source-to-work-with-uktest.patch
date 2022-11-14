@@ -20,7 +20,7 @@ index 5249284..59293a3 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, memmem_oob_tests)
++UK_TESTCASE(uk_libc_string_tests, memmem_oob_tests)
  {
  	char *p = memmem("abcde", 4, "cde", 3);
 -	if (p)

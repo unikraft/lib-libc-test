@@ -40,7 +40,7 @@ index 608eadf..2ca66cd 100644
  }
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, string_memmem_tests)
++UK_TESTCASE(uk_libc_string_tests, string_memmem_tests)
  {
  	N("","a", "a")
  	N("a","a", "aa")

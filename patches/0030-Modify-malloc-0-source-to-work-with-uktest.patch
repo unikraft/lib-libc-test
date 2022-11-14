@@ -20,7 +20,7 @@ index e354bca..e2e13a4 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, malloc_0_tests)
++UK_TESTCASE(uk_libc_malloc_testss, malloc_0_tests)
  {
  	void *p = malloc(0);
  	void *q = malloc(0);

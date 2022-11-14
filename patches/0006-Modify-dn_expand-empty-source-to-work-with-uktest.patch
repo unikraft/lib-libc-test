@@ -20,7 +20,7 @@ index 2afe634..8d1e912 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, dn_expand_empty_tests)
++UK_TESTCASE(uk_libc_network_tests, dn_expand_empty_tests)
  {
  	unsigned char packet[] = "";
  	char name[] = "XX";

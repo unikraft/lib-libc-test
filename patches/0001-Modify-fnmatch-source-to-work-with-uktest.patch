@@ -26,7 +26,7 @@ index 96b8e06..b6d7743 100644
  };
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, fnmatch_tests)
++UK_TESTCASE(uk_libc_string_tests, fnmatch_tests)
  {
  	int i;
  

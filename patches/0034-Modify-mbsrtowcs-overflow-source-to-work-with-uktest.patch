@@ -20,7 +20,7 @@ index 6f2a9da..e51417b 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, mbsrtowcs_overflow_tests)
++UK_TESTCASE(uk_libc_string_tests, mbsrtowcs_overflow_tests)
  {
  	wchar_t ws[] = L"XXXXX";
  	const char *src = "abcd";

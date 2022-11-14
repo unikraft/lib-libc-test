@@ -23,7 +23,7 @@ index d0ccd35..95179d9 100644
 +#define T(f) UK_TEST_EXPECT_ZERO((f))
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, malloc_brk_fail_tests)
++UK_TESTCASE(uk_libc_malloc_tests, malloc_brk_fail_tests)
  {
  	void *p;
  	void *q;

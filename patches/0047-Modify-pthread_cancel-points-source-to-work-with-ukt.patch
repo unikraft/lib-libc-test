@@ -111,7 +111,7 @@ index 8b169a0..ae5badb 100644
  }
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, pthread_cancel_points_test)
++UK_TESTCASE(uk_libc_pthread_tests, pthread_cancel_points_test)
  {
  	TESTR(sem_init(&sem_seq, 0, 0), "creating semaphore");
  

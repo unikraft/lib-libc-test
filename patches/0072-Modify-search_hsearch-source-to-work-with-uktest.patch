@@ -31,7 +31,7 @@ index be9fb64..f6f1a1e 100644
  #define getdata(e) ((intptr_t)(e)->data)
  
 -int main()
-+UK_TESTCASE(uk_libc_testsuite, search_hsearch_test)
++UK_TESTCASE(uk_libc_structure_search_tests, search_hsearch_test)
  {
  	ENTRY *e;
  

@@ -38,7 +38,7 @@ index 70c1118..0697613 100644
  };
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, snprintf_tests)
++UK_TESTCASE(uk_libc_string_tests, snprintf_tests)
  {
  	int i, j, k;
  	char b[2000];

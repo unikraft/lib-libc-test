@@ -111,7 +111,7 @@ index a269cb8..d16c214 100644
 +})
  
 -int main()
-+UK_TESTCASE(uk_libc_testsuite, flockfile_list_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, flockfile_list_tests)
  {
 -	FILE *f = tmpfile();
 -	FILE *g = tmpfile();

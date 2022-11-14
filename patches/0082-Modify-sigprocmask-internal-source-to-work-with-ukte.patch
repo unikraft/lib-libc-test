@@ -20,7 +20,7 @@ index 57b5c40..1cc9f84 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, sigprocmask_internal_tests)
++UK_TESTCASE(uk_libc_setjmp_tests, sigprocmask_internal_tests)
  {
  	sigset_t s;
  	int i;

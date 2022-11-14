@@ -20,7 +20,7 @@ index 6780310..2741859 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, setenv_oom_tests)
++UK_TESTCASE(uk_libc_env_tests, setenv_oom_tests)
  {
  	char buf[10000];
  

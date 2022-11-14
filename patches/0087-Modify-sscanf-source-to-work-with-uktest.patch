@@ -37,7 +37,7 @@ index 4480109..c6f9678 100644
 +	TEST(t, d, (double)x, "%g != %g")
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, sscanf_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, sscanf_tests)
  {
  	int i;
  	char a[100], b[100];

@@ -42,7 +42,7 @@ index 17fdb64..ac36e10 100644
  }
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, fscanf_test)
++UK_TESTCASE(uk_libc_file_folder_tests, fscanf_test)
  {
  	int i, x, y;
  	double u;

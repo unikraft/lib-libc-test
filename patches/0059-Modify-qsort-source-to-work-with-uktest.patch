@@ -102,7 +102,7 @@ index 36c09d1..0ce6b19 100644
  } while(0)
  
 -static void char_test(void)
-+UK_TESTCASE(uk_libc_testsuite, qsort_char_test)
++UK_TESTCASE(uk_libc_sort_tests, qsort_char_test)
  {
  	T("", "");
  	T("1", "1");
@@ -111,7 +111,7 @@ index 36c09d1..0ce6b19 100644
  }
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, qsort_test)
++UK_TESTCASE(uk_libc_sort_tests, qsort_test)
  {
  	int i;
  

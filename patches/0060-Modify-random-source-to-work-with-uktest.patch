@@ -45,7 +45,7 @@ index 69596fb..881b1fa 100644
  }
  
 -int main()
-+UK_TESTCASE(uk_libc_testsuite, random_test)
++UK_TESTCASE(uk_libc_random_tests, random_test)
  {
  	long x[100];
  	long y,z;

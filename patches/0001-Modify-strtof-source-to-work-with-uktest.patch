@@ -26,7 +26,7 @@ index a998bea..48cb18a 100644
  };
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, strtof_tests)
++UK_TESTCASE(uk_libc_conversion_tests, strtof_tests)
  {
  	int i;
  	float x;

@@ -20,7 +20,7 @@ index 279d25b..fd75b47 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, iconv_roundtrips_tests)
++UK_TESTCASE(uk_libc_iconv_tests, iconv_roundtrips_tests)
  {
  	static char *test_charsets[] = {
  		"iso-8859-1",

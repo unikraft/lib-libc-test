@@ -22,7 +22,7 @@ index dc0a13d..cc5c304 100644
 +#define A(c) UK_TEST_ASSERT((c))
  
 -int main()
-+UK_TESTCASE(uk_libc_testsuite, fgetwc_buffering_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, fgetwc_buffering_tests)
  {
 -	t_setutf8();
 +	UK_TEST_EXPECT_ZERO(t_setutf8());

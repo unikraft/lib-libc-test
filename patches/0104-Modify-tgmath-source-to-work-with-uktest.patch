@@ -18,7 +18,7 @@ index dcbc640..efc83ac 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, tgmath_tests)
++UK_TESTCASE(uk_libc_tgmath_tests, tgmath_tests)
  {
  	long i;
  

@@ -37,7 +37,7 @@ index 73be607..40aa79f 100644
  }
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, wcsstr_tests)
++UK_TESTCASE(uk_libc_string_tests, wcsstr_tests)
  {
  	N(L"", L"a")
  	N(L"a", L"aa")

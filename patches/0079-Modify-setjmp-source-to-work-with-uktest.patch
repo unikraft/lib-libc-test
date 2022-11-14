@@ -23,7 +23,7 @@ index 7ba09d3..67a34aa 100644
 +#define TEST(c, ...) UK_TEST_ASSERT((c))
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, setjmp_tests)
++UK_TESTCASE(uk_libc_setjmp_tests, setjmp_tests)
  {
  	volatile int x = 0, r;
  	jmp_buf jb;

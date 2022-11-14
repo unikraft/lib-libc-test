@@ -38,7 +38,7 @@ index d09a31c..1245761 100644
 +#define TEST2(r, f, x, m) UK_TEST_ASSERT(((f) == (x)))
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, strtol_tests)
++UK_TESTCASE(uk_libc_conversion_tests, strtol_tests)
  {
  	int i;
  	long l;

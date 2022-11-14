@@ -32,7 +32,7 @@ index d1d0b2e..eb4eefa 100644
  }
  
 -int main()
-+UK_TESTCASE(uk_libc_testsuite, printf_1e9_oob_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, printf_1e9_oob_tests)
  {
  	// fill stack with something
 -	t("%.1f", 123123123123123.0, "123123123123123.0");

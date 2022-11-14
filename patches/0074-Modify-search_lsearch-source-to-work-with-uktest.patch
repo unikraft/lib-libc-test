@@ -33,7 +33,7 @@ index 711a7a0..d2ae47c 100644
  #define get(k) lfind(k, tab, &nel, W, (int(*)(const void*,const void*))strcmp)
  
 -int main()
-+UK_TESTCASE(uk_libc_testsuite, search_lsearch_tests)
++UK_TESTCASE(uk_libc_structure_search_tests, search_lsearch_tests)
  {
  	size_t n;
  

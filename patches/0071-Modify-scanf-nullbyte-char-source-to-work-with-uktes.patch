@@ -20,7 +20,7 @@ index 48c6930..743e7a5 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, scanf_nullbyte_char_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, scanf_nullbyte_char_tests)
  {
  	char dst[] = { 'a', 'a' }; 
  	char src[] = { 'b', 'b', 0 };

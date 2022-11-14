@@ -49,7 +49,7 @@ index 96256a7..1c3ceaa 100644
  }
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, string_memcpy_tests)
++UK_TESTCASE(uk_libc_string_tests, string_memcpy_tests)
  {
  	int i,j,k;
  

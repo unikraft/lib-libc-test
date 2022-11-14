@@ -20,7 +20,7 @@ index 2c4935e..4c6bf54 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, clocale_mbfuncs_tests)
++UK_TESTCASE(uk_libc_mbfunc_tests, clocale_mbfuncs_tests)
  {
  	int i, j;
  	mbstate_t st, st2;

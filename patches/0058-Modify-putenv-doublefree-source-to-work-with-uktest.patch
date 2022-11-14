@@ -19,7 +19,7 @@ index d57bba1..2ae920e 100644
 +#include <uk/test.h>
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, putenv_doublefree_tests)
++UK_TESTCASE(uk_libc_env_tests, putenv_doublefree_tests)
  {
 -	setenv("A", "1", 1);
 -	setenv("A", "2", 1);

@@ -42,7 +42,7 @@ index 60d80c8..22a7f8b 100644
  } while(0)
  
 -int main()
-+UK_TESTCASE(uk_libc_testsuite, pleval_tests)
++UK_TESTCASE(uk_libc_pleval_tests, pleval_tests)
  {
  	char buf[210];
  

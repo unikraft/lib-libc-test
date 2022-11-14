@@ -24,7 +24,7 @@ index 7951b11..2431d0e 100644
 +#define TEST(c, ...) UK_TEST_ASSERT(c)
  
 -int main()
-+UK_TESTCASE(uk_libc_testsuite, clock_gettime_tests)
++UK_TESTCASE(uk_libc_time_tests, clock_gettime_tests)
  {
  	struct timespec ts;
  	TEST(clock_gettime(CLOCK_REALTIME, &ts) == 0 && errno == 0, "%s\n", strerror(errno));

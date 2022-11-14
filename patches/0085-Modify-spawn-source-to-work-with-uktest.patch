@@ -31,7 +31,7 @@ index 4ce9772..1bfab8c 100644
 +	UK_TEST_EXPECT_NOT_ZERO((f))
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, spawn_tests)
++UK_TESTCASE(uk_libc_posix_spawn_tests, spawn_tests)
  {
  	int r;
  	char foo[10];

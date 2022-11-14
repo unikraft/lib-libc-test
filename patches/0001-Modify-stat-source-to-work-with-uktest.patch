@@ -24,7 +24,7 @@ index d743fc1..0c2ad41 100644
 +#define TEST(c, ...) UK_TEST_ASSERT((c))
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, stat_tests)
++UK_TESTCASE(uk_libc_file_folder_tests, stat_tests)
  {
  	struct stat st;
  	FILE *f;

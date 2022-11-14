@@ -22,7 +22,7 @@ index cf86439..175dd0d 100644
  extern char **environ;
  
 -int main()
-+UK_TESTCASE(uk_libc_testsuite, env_tests)
++UK_TESTCASE(uk_libc_env_tests, env_tests)
  {
  	char *s;
  	int r;

@@ -25,7 +25,7 @@ index 7fa7a1f..d19ac39 100644
  #define TESTVAL(v,op,x) TEST(v op x, "%jd\n", (intmax_t)(v))
  
 -int main(void)
-+UK_TESTCASE(uk_libc_testsuite, utime_tests)
++UK_TESTCASE(uk_libc_time_tests, utime_tests)
  {
  	struct stat st;
  	FILE *f;
