@@ -1,6 +1,6 @@
-From bead4ef43959f5862e29c657bc300dddbb1d29a9 Mon Sep 17 00:00:00 2001
+From 3eaf1e31ba3904b1f33c9f758e789f8d84333b99 Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Sun, 23 Oct 2022 19:53:23 +0300
+Date: Mon, 14 Nov 2022 10:19:18 +0200
 Subject: [PATCH] Modify mbc source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
  1 file changed, 8 insertions(+), 13 deletions(-)
 
 diff --git a/src/functional/mbc.c b/src/functional/mbc.c
-index 65dceaa..7614616 100644
+index 65dceaa..8014c31 100644
 --- a/src/functional/mbc.c
 +++ b/src/functional/mbc.c
 @@ -4,23 +4,20 @@
@@ -33,10 +33,10 @@ index 65dceaa..7614616 100644
 -	(i = (f)) == (x) || \
 -		t_error("%s failed (%s) got 0x%04x want 0x%04x\n", #f, m, i, x) )
 +#define T(f, x, m) memset(&st, 0, sizeof st); \
-+	UK_TEST_ASSERT(((i = (f)) == (x)))
++	UK_TEST_ASSERT(f == x)
 +		
 +#define TCHAR(f, x, m) memset(&st, 0, sizeof st); \
-+	UK_TEST_ASSERT(((i = (f)) == (x)))
++	UK_TEST_ASSERT(f == x)
  
 -int main(void)
 +UK_TESTCASE(uk_libc_mbfunc_tests, mbc_test)

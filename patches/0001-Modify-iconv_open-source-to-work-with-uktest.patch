@@ -1,15 +1,15 @@
-From f0d1e0332ed6a4a13c33adda4a7b6d5273cba71b Mon Sep 17 00:00:00 2001
+From 6209409cd5a19643a093486bdb4f250c47050532 Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Sun, 23 Oct 2022 01:07:52 +0300
+Date: Mon, 14 Nov 2022 20:55:37 +0200
 Subject: [PATCH] Modify iconv_open source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
 ---
- src/functional/iconv_open.c | 29 ++++++++++-------------------
- 1 file changed, 10 insertions(+), 19 deletions(-)
+ src/functional/iconv_open.c | 33 ++++++++++-----------------------
+ 1 file changed, 10 insertions(+), 23 deletions(-)
 
 diff --git a/src/functional/iconv_open.c b/src/functional/iconv_open.c
-index 8f6b285..11315e2 100644
+index 8f6b285..dd1de56 100644
 --- a/src/functional/iconv_open.c
 +++ b/src/functional/iconv_open.c
 @@ -1,9 +1,9 @@
@@ -24,7 +24,11 @@ index 8f6b285..11315e2 100644
  {
  	iconv_t cd;
  	char buf[100];
-@@ -15,35 +15,26 @@ int main(void)
+@@ -11,39 +11,26 @@ int main(void)
+ 	char *outbuf = buf;
+ 	size_t inlen = strlen(inbuf);
+ 	size_t outlen;
+-	size_t r;
  	char *bad = "bad-codeset";
  
  	cd = iconv_open(bad, bad);
@@ -32,39 +36,39 @@ index 8f6b285..11315e2 100644
 -		t_error("iconv_open(\"%s\",\"%s\") didn't fail\n", bad, bad);
 -	if (errno != EINVAL)
 -		t_error("iconv_open(\"%s\",\"%s\") did not fail with EINVAL, got %s\n", bad, bad, strerror(errno));
-+	UK_TEST_ASSERT((cd == (iconv_t)-1));
++	UK_TEST_ASSERTF((cd == (iconv_t)-1), "iconv_open(%s, %s) == -1", bad, bad);
 +	UK_TEST_ASSERT((errno == EINVAL));
  
  	errno = 0;
  	cd = iconv_open("UTF-8", "UTF-8");
 -	if (cd == (iconv_t)-1)
 -		t_error("iconv_open(\"\",\"\") failed: %s\n", strerror(errno));
-+	UK_TEST_ASSERT((cd != (iconv_t)-1));
++	UK_TEST_ASSERTF((cd != (iconv_t)-1), "iconv_open(UTF-8, UTF-8) != -1");
  
  	errno = 0;
  	outlen = 0;
- 	r = iconv(cd, &inbuf, &inlen, &outbuf, &outlen);
+-	r = iconv(cd, &inbuf, &inlen, &outbuf, &outlen);
 -	if (r != -1)
 -		t_error("iconv() did not fail with 0 output length\n");
 -	if (errno != E2BIG)
 -		t_error("iconv() did not fail with E2BIG, got %s\n", strerror(errno));
-+	UK_TEST_ASSERT((r == -1));
++	UK_TEST_ASSERT(iconv(cd, &inbuf, &inlen, &outbuf, &outlen) == (size_t)-1);
 +	UK_TEST_ASSERT((errno == E2BIG));
  
  	errno = 0;
  	outlen = sizeof buf;
- 	r = iconv(cd, &inbuf, &inlen, &outbuf, &outlen);
+-	r = iconv(cd, &inbuf, &inlen, &outbuf, &outlen);
 -	if (r)
 -		t_error("iconv() did not return 0 when converting utf8 to utf8, got %d\n", r);
 -	if (errno)
 -		t_error("iconv() failed: %s\n", strerror(errno));
-+	UK_TEST_EXPECT_ZERO(r);
++	UK_TEST_EXPECT_ZERO(iconv(cd, &inbuf, &inlen, &outbuf, &outlen));
 +	UK_TEST_EXPECT_ZERO(errno);
  
- 	r = iconv_close(cd);
+-	r = iconv_close(cd);
 -	if (r == -1)
 -		t_error("iconv_close failed: %s\n", strerror(errno));
-+	UK_TEST_ASSERT((r != -1));
++	UK_TEST_ASSERT(iconv_close(cd) != -1);
  
 -	return t_status;
  }

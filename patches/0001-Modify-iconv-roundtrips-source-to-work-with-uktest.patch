@@ -1,15 +1,15 @@
-From dce727a4bf34bde0c731cb134f7e6196f6d990df Mon Sep 17 00:00:00 2001
+From 825b15c833cc4c4f82b581887681e487c287d66d Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Thu, 27 Oct 2022 13:09:47 +0300
+Date: Mon, 14 Nov 2022 21:02:40 +0200
 Subject: [PATCH] Modify iconv-roundtrips source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
 ---
- src/regression/iconv-roundtrips.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+ src/regression/iconv-roundtrips.c | 22 +++++++---------------
+ 1 file changed, 7 insertions(+), 15 deletions(-)
 
 diff --git a/src/regression/iconv-roundtrips.c b/src/regression/iconv-roundtrips.c
-index 279d25b..fd75b47 100644
+index 279d25b..b020c00 100644
 --- a/src/regression/iconv-roundtrips.c
 +++ b/src/regression/iconv-roundtrips.c
 @@ -2,9 +2,9 @@
@@ -24,18 +24,28 @@ index 279d25b..fd75b47 100644
  {
  	static char *test_charsets[] = {
  		"iso-8859-1",
-@@ -44,16 +44,11 @@ int main(void)
+@@ -36,24 +36,16 @@ int main(void)
+ 		char u8buf[1024];
+ 		char buf[256];
+ 		size_t u8rem = sizeof u8buf;
+-		int r1 = iconv(there,
++		UK_TEST_EXPECT_SNUM_NQ(iconv(there,
+ 			&(char *){all_codepoints}, &(size_t){sizeof all_codepoints},
+-			&(char *){u8buf}, &u8rem);
++			&(char *){u8buf}, &u8rem), (size_t) -1);
+ 		size_t u8len = sizeof u8buf - u8rem;
+-		int r2 = iconv(andback,
++		UK_TEST_EXPECT_SNUM_NQ(iconv(andback,
  			&(char *){u8buf}, &(size_t){u8len},
- 			&(char *){buf}, &(size_t){sizeof buf});
- 
+-			&(char *){buf}, &(size_t){sizeof buf});
+-
 -		if (r1) t_error("got %d converting from %s\n", r1, test_charsets[i]);
 -		if (r2) t_error("got %d converting back to %s\n", r2, test_charsets[i]);
 -
 -		if (memcmp(all_codepoints, buf, sizeof buf)) {
 -			t_error("round trip corrupted %s characters\n", test_charsets[i]);
 -		}
-+		UK_TEST_EXPECT_SNUM_NQ(r1, (size_t) -1);
-+		UK_TEST_EXPECT_SNUM_NQ(r2, (size_t) -1);
++			&(char *){buf}, &(size_t){sizeof buf}), (size_t) -1);
 +		UK_TEST_EXPECT_ZERO(memcmp(all_codepoints, buf, sizeof buf));
  
  		iconv_close(there);

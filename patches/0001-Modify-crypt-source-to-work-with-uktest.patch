@@ -1,6 +1,6 @@
-From 74bae6e97b72b60f79703c9cf7e974130a615aa2 Mon Sep 17 00:00:00 2001
+From 9f696055dbadd2bc029d7abc892e811539bb7129 Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Sat, 22 Oct 2022 18:27:21 +0300
+Date: Mon, 14 Nov 2022 19:26:53 +0200
 Subject: [PATCH] Modify crypt source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
  1 file changed, 4 insertions(+), 5 deletions(-)
 
 diff --git a/src/functional/crypt.c b/src/functional/crypt.c
-index 9629651..8138c0a 100644
+index 9629651..3da3fc3 100644
 --- a/src/functional/crypt.c
 +++ b/src/functional/crypt.c
 @@ -1,14 +1,14 @@
@@ -23,7 +23,7 @@ index 9629651..8138c0a 100644
  #define T(h,s,k) p = crypt(k,s); \
   if (!p) p ="*"; \
 - if (strcmp(p,h)!=0) t_error("crypt(%s, \"%s\") failed: got \"%s\" want \"%s\"\n", #k, s, p, h);
-+ UK_TEST_EXPECT_ZERO(strcmp(p,h));
++ UK_TEST_ASSERTF(strcmp(p,h) == 0, "Expected the coded message to be: %s", h);
  
 -int main()
 +UK_TESTCASE(uk_libc_crypt_tests, crypt_tests)

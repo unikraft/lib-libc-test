@@ -1,6 +1,6 @@
-From 21ef1341622d7ef52b1c6d5cfbbb75dc3027fed8 Mon Sep 17 00:00:00 2001
+From abe040895ebda4ccde811e24627e107cc0da5136 Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Fri, 28 Oct 2022 00:26:34 +0300
+Date: Tue, 15 Nov 2022 14:23:56 +0200
 Subject: [PATCH] Modify printf-fmt-g-zeros source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
  1 file changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/src/regression/printf-fmt-g-zeros.c b/src/regression/printf-fmt-g-zeros.c
-index 2b08691..d37d171 100644
+index 2b08691..d9939f7 100644
 --- a/src/regression/printf-fmt-g-zeros.c
 +++ b/src/regression/printf-fmt-g-zeros.c
 @@ -2,20 +2,20 @@
@@ -37,8 +37,8 @@ index 2b08691..d37d171 100644
 -	t("%.50g", 100000000000000.5, "100000000000000.5");
 -	t("%.50g", 987654321098765.0, "987654321098765");
 -	return t_status;
-+	UK_TEST_EXPECT_ZERO(t("%.50g", 100000000000000.5, "100000000000000.5"));
-+	UK_TEST_EXPECT_ZERO(t("%.50g", 987654321098765.0, "987654321098765"));
++	UK_TEST_ASSERTF(t("%.50g", 100000000000000.5, "100000000000000.5") == 0, "snprintf(buf, sizeof buf, %s, %lf)", "%.50g", 100000000000000.5);
++	UK_TEST_ASSERTF(t("%.50g", 987654321098765.0, "987654321098765") == 0, "snprintf(buf, sizeof buf, %s, %lf)", "%.50g", 987654321098765.0);
  }
 -- 
 2.25.1
