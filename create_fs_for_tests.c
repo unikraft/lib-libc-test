@@ -49,7 +49,7 @@ int destroy_fs(void){
 		return -1;
 	}
 
-	char filename_qfd[100];
+	char filename_qfd[261];
 
 	while ((dir = readdir(dr)) != NULL){
   		struct stat stbuf;
