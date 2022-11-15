@@ -103,7 +103,7 @@ ifneq ($(filter y,$(CONFIG_LIBLIBCTEST_STRING_TESTS) $(CONFIG_LIBUKTEST_ALL)),)
 endif
 
 ifeq ($(filter y,$(CONFIG_LIBNOLIBC)),)
-    ifneq ($(filter y,$(CONFIG_LIBLIBCTEST_MALLOC_TESTS) $(CONFIG_LIBLIBCTEST_ENV_TESTS) $(CONFIG_LIBLIBCTEST_FILE_FOLDER_TESTS) $(CONFIG_LIBLIBCTEST_PTHREAD_TESTS) $(CONFIG_LIBUKTEST_ALL)),)
+    ifneq ($(filter y,$(CONFIG_LIBLIBCTEST_MALLOC_TESTS) $(CONFIG_LIBLIBCTEST_ENV_TESTS) $(CONFIG_LIBLIBCTEST_PTHREAD_TESTS) $(CONFIG_LIBUKTEST_ALL)),)
         LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/common/setrlim.c
     endif
 endif
@@ -161,39 +161,39 @@ ifeq ($(filter y,$(CONFIG_LIBNOLIBC)),)
 endif
 
 ifneq ($(filter y,$(CONFIG_LIBLIBCTEST_FILE_FOLDER_TESTS) $(CONFIG_LIBUKTEST_ALL)),)
-    LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/printf-1e9-oob.c
-    LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/printf-fmt-g-round.c
-    LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/printf-fmt-g-zeros.c
+    #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/printf-1e9-oob.c
+    #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/printf-fmt-g-round.c
+    #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/printf-fmt-g-zeros.c
     LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/scanf-nullbyte-char.c
-    LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/scanf-bytes-consumed.c
+    #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/scanf-bytes-consumed.c
     LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/scanf-match-literal-eof.c
-    LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/sscanf.c
+    #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/sscanf.c
     ifeq ($(filter y,$(CONFIG_LIBNOLIBC)),)
-        LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/rewind-clear-error.c
-        #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/rlimit-open-files.c
-        LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/fgets-eof.c
-        LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/common/utf8.c
-        LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/printf-fmt-n.c
-        LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/swprintf.c
-        LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/fgetwc-buffering.c
-        LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/sscanf_long.c
-        LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/memstream.c
+        #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/rewind-clear-error.c
+        LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/rlimit-open-files.c
+        #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/fgets-eof.c
+        #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/common/utf8.c
+        #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/printf-fmt-n.c
+        #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/swprintf.c
+        #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/fgetwc-buffering.c
+        #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/sscanf_long.c
+        #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/memstream.c
         ifneq ($(filter y,$(CONFIG_LIBVFSCORE_AUTOMOUNT_ROOTFS)),)
-            LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/fcntl.c
-            LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/fscanf.c
-            LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/fwscanf.c
+            #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/fcntl.c
+            #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/fscanf.c
+            #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/fwscanf.c
             #Fgetc waits forever to read bytes from file
             #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/ungetc.c
-            LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/setvbuf-unget.c
-            LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/lseek-large.c
-            LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/fdopen.c
-            LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/mkdtemp-failure.c
-            LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/mkstemp-failure.c
-            LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/stat.c
-            LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/ftello-unflushed-append.c
+            #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/setvbuf-unget.c
+            #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/lseek-large.c
+            #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/fdopen.c
+            #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/mkdtemp-failure.c
+            #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/mkstemp-failure.c
+            #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/stat.c
+            #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/ftello-unflushed-append.c
             #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/flockfile-list.c
-            LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/getpwnam_r-crash.c
-            LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/getpwnam_r-errno.c
+            #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/getpwnam_r-crash.c
+            #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/getpwnam_r-errno.c
         endif
     endif
 endif
@@ -263,8 +263,8 @@ endif
 
 ifneq ($(filter y,$(CONFIG_LIBLIBCTEST_MALLOC_TESTS) $(CONFIG_LIBUKTEST_ALL)),)
     LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/malloc-0.c
-    LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/malloc-oom.c
-    LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/malloc-brk-fail.c
+    #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/malloc-oom.c
+    #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/malloc-brk-fail.c
 endif
 
 ifeq ($(filter y,$(CONFIG_LIBNOLIBC)),)
@@ -286,7 +286,7 @@ endif
 
 ifeq ($(filter y,$(CONFIG_LIBNOLIBC)),)
     ifneq ($(filter y,$(CONFIG_LIBLIBCTEST_MBFUNC_TESTS) $(CONFIG_LIBUKTEST_ALL)),)
-        LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/clocale_mbfuncs.c
+        #LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/clocale_mbfuncs.c
         LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/functional/mbc.c
     endif
 endif

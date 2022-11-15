@@ -50,6 +50,9 @@
     #if defined(CONFIG_LIBUKTEST_ALL) || defined(CONFIG_LIBLIBCTEST_PTHREAD_TESTS)
         uk_testsuite_register(uk_libc_pthread_tests, NULL);
     #endif
+    #if defined(CONFIG_LIBUKTEST_ALL) || defined(CONFIG_LIBLIBCTEST_ACCESS_TESTS)
+        uk_testsuite_register(uk_libc_access_tests, NULL);
+    #endif
 #endif
 
 #if defined(CONFIG_LIBUKTEST_ALL) || defined(CONFIG_LIBLIBCTEST_MALLOC_TESTS)
