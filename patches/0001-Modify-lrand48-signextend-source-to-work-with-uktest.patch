@@ -1,18 +1,18 @@
-From 9611687898986420791d3b12e51bdf85db975980 Mon Sep 17 00:00:00 2001
+From 4ad8acdc712a45aa163b9da61cc47e31596539f7 Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Thu, 27 Oct 2022 14:46:40 +0300
+Date: Mon, 14 Nov 2022 21:26:50 +0200
 Subject: [PATCH] Modify lrand48-signextend source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
 ---
- src/regression/lrand48-signextend.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ src/regression/lrand48-signextend.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
 diff --git a/src/regression/lrand48-signextend.c b/src/regression/lrand48-signextend.c
-index dedd515..555597a 100644
+index dedd515..af0642a 100644
 --- a/src/regression/lrand48-signextend.c
 +++ b/src/regression/lrand48-signextend.c
-@@ -1,16 +1,17 @@
+@@ -1,16 +1,13 @@
  // lrand48 should give deterministic results
  #define _XOPEN_SOURCE 700
  #include <stdlib.h>
@@ -22,19 +22,19 @@ index dedd515..555597a 100644
 -int main(void)
 +UK_TESTCASE(uk_libc_random_tests, lrand48_signextend_tests)
  {
- 	long r;
- 	r = lrand48();
+-	long r;
+-	r = lrand48();
 -	if (r != 0) t_error("1st lrand48() got %ld want 0\n", r);
-+	UK_TEST_EXPECT_ZERO(r);
-+	
- 	r = lrand48();
+-	r = lrand48();
 -	if (r != 2116118) t_error("2nd lrand48() got %ld want 2116118\n", r);
-+	UK_TEST_EXPECT_SNUM_EQ(r, 2116118);
-+	
- 	r = lrand48();
+-	r = lrand48();
 -	if (r != 89401895) t_error("3rd lrand48() got %ld want 89401895\n", r);
 -	return t_status;
-+	UK_TEST_EXPECT_SNUM_EQ(r, 89401895);
++	UK_TEST_EXPECT_ZERO(lrand48());
++	
++	UK_TEST_EXPECT_SNUM_EQ(lrand48(), 2116118);
++	
++	UK_TEST_EXPECT_SNUM_EQ(lrand48(), 89401895);
  }
 -- 
 2.25.1

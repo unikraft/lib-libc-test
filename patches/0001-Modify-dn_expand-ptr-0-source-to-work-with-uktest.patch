@@ -1,18 +1,18 @@
-From ad61288c7df2daca396e7177730819684642f902 Mon Sep 17 00:00:00 2001
+From dcb95ed136bae1deb824feb3b8181461f8708cdd Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Wed, 26 Oct 2022 22:31:26 +0300
+Date: Mon, 14 Nov 2022 20:01:10 +0200
 Subject: [PATCH] Modify dn_expand-ptr-0 source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
 ---
- src/regression/dn_expand-ptr-0.c | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
+ src/regression/dn_expand-ptr-0.c | 20 ++++++--------------
+ 1 file changed, 6 insertions(+), 14 deletions(-)
 
 diff --git a/src/regression/dn_expand-ptr-0.c b/src/regression/dn_expand-ptr-0.c
-index cb19557..b85968b 100644
+index cb19557..9fd66a9 100644
 --- a/src/regression/dn_expand-ptr-0.c
 +++ b/src/regression/dn_expand-ptr-0.c
-@@ -3,9 +3,9 @@
+@@ -3,29 +3,21 @@
  #define _BSD_SOURCE 1
  #include <resolv.h>
  #include <string.h>
@@ -24,28 +24,28 @@ index cb19557..b85968b 100644
  {
  	unsigned char packet[] = {2,'p','q',0xc0,5,0};
  	char name[] = "XXXX";
-@@ -13,19 +13,13 @@ int main(void)
+-	int r;
  
  	/* non-empty name with pointer to 0 */
- 	r = dn_expand(packet, packet+6, packet, name, 3);
+-	r = dn_expand(packet, packet+6, packet, name, 3);
 -	if (r!=5)
 -		t_error("dn_expand(\"\\2pq\\xc0\\5\", name, 3) returned %d, wanted 5\n", r);
 -	if (strcmp(name, "pq"))
 -		t_error("dn_expand(\"\\2pq\\xc0\\5\", name, 3) failed: got \"%s\" name, wanted \"pq\"\n", name);
-+	UK_TEST_ASSERT(r == 5);
++	UK_TEST_ASSERT(dn_expand(packet, packet+6, packet, name, 3) == 5);
 +	UK_TEST_EXPECT_ZERO(strcmp(name, "pq"));
  
  	/* empty name with pointer to 0 */
  	memcpy(packet, "\xc0\2", 3);
  	memcpy(name, "XXXX", 5);
- 	r = dn_expand(packet, packet+3, packet, name, 1);
+-	r = dn_expand(packet, packet+3, packet, name, 1);
 -	if (r!=2)
 -		t_error("dn_expand(\"\\xc0\\2\", name, 1) returned %d, wanted 2\n", r);
 -	if (name[0])
 -		t_error("dn_expand(\"\\xc0\\2\", name, 1) failed: got \"%s\" name, wanted \"\"\n", name);
--
+ 
 -	return t_status;
-+	UK_TEST_ASSERT(r == 2);
++	UK_TEST_ASSERT(dn_expand(packet, packet+3, packet, name, 1) == 2);
 +	UK_TEST_ASSERT(name[0] == '\0');
  }
 -- 

@@ -1,15 +1,15 @@
-From 0a596531cdb61ed2a7300b81c1a793f4908576ba Mon Sep 17 00:00:00 2001
+From 652a89f148a076d2d18f29c5ad3ad0a172645bcf Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Sun, 23 Oct 2022 22:35:52 +0300
+Date: Tue, 15 Nov 2022 15:30:42 +0200
 Subject: [PATCH] Modify qsort source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
 ---
- src/functional/qsort.c | 51 +++++++++++++++++-------------------------
- 1 file changed, 20 insertions(+), 31 deletions(-)
+ src/functional/qsort.c | 52 +++++++++++++++++-------------------------
+ 1 file changed, 21 insertions(+), 31 deletions(-)
 
 diff --git a/src/functional/qsort.c b/src/functional/qsort.c
-index 36c09d1..0ce6b19 100644
+index 36c09d1..62b04dd 100644
 --- a/src/functional/qsort.c
 +++ b/src/functional/qsort.c
 @@ -2,7 +2,7 @@
@@ -68,7 +68,7 @@ index 36c09d1..0ce6b19 100644
  static void uint64_gen(uint64_t *p, uint64_t *p_sorted, int n)
  {
  	int i;
-@@ -100,32 +98,25 @@ static void uint64_gen(uint64_t *p, uint64_t *p_sorted, int n)
+@@ -100,32 +98,26 @@ static void uint64_gen(uint64_t *p, uint64_t *p_sorted, int n)
  	t_shuffle(p, n);
  }
  
@@ -98,6 +98,7 @@ index 36c09d1..0ce6b19 100644
 -		t_printf("\tgot:  \"%s\"\n", p); \
 -		t_printf("\twant: \"%s\"\n", a_sorted); \
 -	} \
++	uk_test_printf("qsort(\"%s\"). want: %s, got: %s\n", a, a_sorted, p); \
 +	UK_TEST_EXPECT_ZERO(memcmp(p, a_sorted, sizeof p)); \
  } while(0)
  
@@ -106,7 +107,7 @@ index 36c09d1..0ce6b19 100644
  {
  	T("", "");
  	T("1", "1");
-@@ -156,17 +147,15 @@ static void char_test(void)
+@@ -156,17 +148,15 @@ static void char_test(void)
  	T("49735862185236174", "11223344556677889");
  }
  

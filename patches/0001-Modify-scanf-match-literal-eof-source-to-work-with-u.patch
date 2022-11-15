@@ -1,18 +1,18 @@
-From f71f80e5a9374ff217676519a180180c2bb4073d Mon Sep 17 00:00:00 2001
+From d979f317fbcb9130454ef7db3125f9e83dc057e0 Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Fri, 28 Oct 2022 17:46:47 +0300
+Date: Tue, 15 Nov 2022 22:41:48 +0200
 Subject: [PATCH] Modify scanf-match-literal-eof source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
 ---
- src/regression/scanf-match-literal-eof.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ src/regression/scanf-match-literal-eof.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
 diff --git a/src/regression/scanf-match-literal-eof.c b/src/regression/scanf-match-literal-eof.c
-index bd7c5e7..92cb07d 100644
+index bd7c5e7..3ca1520 100644
 --- a/src/regression/scanf-match-literal-eof.c
 +++ b/src/regression/scanf-match-literal-eof.c
-@@ -1,16 +1,13 @@
+@@ -1,16 +1,11 @@
  // commit: 5efc6af4ebb9d50eb978d0338835544fdfea0396 2011-04-25
  // scanf misreports literal match as input failure when reading EOF (null for sscanf)
  #include <stdio.h>
@@ -23,14 +23,14 @@ index bd7c5e7..92cb07d 100644
 +UK_TESTCASE(uk_libc_file_folder_tests, scanf_match_literal_eof_tests)
  {
  	char buf[] = { 0 };
- 	int match_count;
+-	int match_count;
  
- 	match_count = sscanf(buf, "a");
+-	match_count = sscanf(buf, "a");
 -	if(match_count != EOF)
 -		t_error("scanf reported match failure instead of input failure on literal EOF match\n");
 -
 -	return t_status;
-+	UK_TEST_ASSERT(match_count == EOF);
++	UK_TEST_ASSERT(sscanf(buf, "a") == EOF);
  }
 -- 
 2.25.1

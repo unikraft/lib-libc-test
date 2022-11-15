@@ -1,18 +1,18 @@
-From 7b35af207875ee2790255af25e7f7eaf1479fc46 Mon Sep 17 00:00:00 2001
+From ccddbb350221d4559d5e68fd3392bdf0a8d635cb Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Thu, 27 Oct 2022 14:37:37 +0300
+Date: Mon, 14 Nov 2022 21:15:25 +0200
 Subject: [PATCH] Modify inet_pton-empty-last-field source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
 ---
- src/regression/inet_pton-empty-last-field.c | 27 ++++-----------------
- 1 file changed, 5 insertions(+), 22 deletions(-)
+ src/regression/inet_pton-empty-last-field.c | 31 ++++-----------------
+ 1 file changed, 5 insertions(+), 26 deletions(-)
 
 diff --git a/src/regression/inet_pton-empty-last-field.c b/src/regression/inet_pton-empty-last-field.c
-index b06fa11..4a333bb 100644
+index b06fa11..95642d9 100644
 --- a/src/regression/inet_pton-empty-last-field.c
 +++ b/src/regression/inet_pton-empty-last-field.c
-@@ -4,17 +4,9 @@
+@@ -4,36 +4,15 @@
  #include <stdio.h>
  #include <string.h>
  #include <arpa/inet.h>
@@ -20,7 +20,8 @@ index b06fa11..4a333bb 100644
 +#include <uk/test.h>
  
 -static void txt(char *s, unsigned char *buf)
--{
++UK_TESTCASE(uk_libc_network_tests, inet_pton_empty_last_field_tests)
+ {
 -	int i;
 -	sprintf(s, "%04x", buf[0]<<8 | buf[1]);
 -	for (i=1; i<8; i++)
@@ -28,31 +29,30 @@ index b06fa11..4a333bb 100644
 -}
 -
 -int main(void)
-+UK_TESTCASE(uk_libc_network_tests, inet_pton_empty_last_field_tests)
- {
- 	char s[50], sw[50];
+-{
+-	char s[50], sw[50];
  	unsigned char buf[16];
-@@ -22,18 +14,9 @@ int main(void)
- 	char *addr;
+ 	unsigned char want[16] = {0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,0};
+-	char *addr;
  
- 	addr = "1:2:3:4:5:6:7::";
+-	addr = "1:2:3:4:5:6:7::";
 -	if (inet_pton(AF_INET6, addr, buf)!=1 || memcmp(buf, want, 16)!=0) {
 -		txt(s, buf);
 -		txt(sw, want);
 -		t_error("inet_pton(%s) returned %s, wanted %s\n",
 -			addr, s, sw);
 -	}
-+	UK_TEST_ASSERT(!(inet_pton(AF_INET6, addr, buf)!=1 || memcmp(buf, want, 16)!=0));
++	UK_TEST_ASSERT(!(inet_pton(AF_INET6, "1:2:3:4:5:6:7::", buf)!=1 || memcmp(buf, want, 16)!=0));
++
++	UK_TEST_EXPECT_ZERO(inet_pton(AF_INET6, "1:2:3:4:5:6:7::9:10:11:12:13:14:15:16:17:18:19:20", buf));
  
- 	addr = "1:2:3:4:5:6:7::9:10:11:12:13:14:15:16:17:18:19:20";
+-	addr = "1:2:3:4:5:6:7::9:10:11:12:13:14:15:16:17:18:19:20";
 -	if (inet_pton(AF_INET6, addr, buf)!=0) {
 -		txt(s, buf);
 -		t_error("inet_pton(%s) returned %s, wanted a failure\n",
 -			addr, s);
 -	}
 -	return t_status;
-+	UK_TEST_EXPECT_ZERO(inet_pton(AF_INET6, addr, buf));
-+
  }
 -- 
 2.25.1

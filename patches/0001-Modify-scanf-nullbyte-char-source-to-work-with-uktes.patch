@@ -1,6 +1,6 @@
-From 87ee5b9d20700834ab5240eec176aeb9b13a84a6 Mon Sep 17 00:00:00 2001
+From 0080908eb45e7d2cb1e7e3a41b55f7a2325ec83f Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Fri, 28 Oct 2022 18:08:26 +0300
+Date: Tue, 15 Nov 2022 22:45:49 +0200
 Subject: [PATCH] Modify scanf-nullbyte-char source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
  1 file changed, 5 insertions(+), 7 deletions(-)
 
 diff --git a/src/regression/scanf-nullbyte-char.c b/src/regression/scanf-nullbyte-char.c
-index 48c6930..743e7a5 100644
+index 48c6930..6751e6b 100644
 --- a/src/regression/scanf-nullbyte-char.c
 +++ b/src/regression/scanf-nullbyte-char.c
 @@ -1,16 +1,14 @@
@@ -31,7 +31,7 @@ index 48c6930..743e7a5 100644
 -		t_error("scanf clobbered the char buffer for %%c conversion\n");
 -	return t_status;
 +
-+	UK_TEST_ASSERT(sscanf(src, "%c", dst) == 1);
++	UK_TEST_ASSERTF(sscanf(src, "%c", dst) == 1, "sscanf(%s, %s, %s) == 1", src, "%c", dst);
 +	UK_TEST_ASSERT(dst[1] == 'a');
  }
 -- 

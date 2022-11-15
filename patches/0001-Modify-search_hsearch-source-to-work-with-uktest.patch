@@ -1,6 +1,6 @@
-From 24d3b6d588f856b709f6592795d961dde04f8f73 Mon Sep 17 00:00:00 2001
+From c5d0b5726fef52738bc6d1ad0a24aa585310a16d Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Sun, 23 Oct 2022 23:49:20 +0300
+Date: Tue, 15 Nov 2022 22:52:27 +0200
 Subject: [PATCH] Modify search_hsearch source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
  1 file changed, 10 insertions(+), 19 deletions(-)
 
 diff --git a/src/functional/search_hsearch.c b/src/functional/search_hsearch.c
-index be9fb64..f6f1a1e 100644
+index be9fb64..79a4383 100644
 --- a/src/functional/search_hsearch.c
 +++ b/src/functional/search_hsearch.c
 @@ -6,26 +6,23 @@
@@ -23,7 +23,7 @@ index be9fb64..f6f1a1e 100644
  	e = hsearch((ENTRY){.key = k, .data = (void*)v}, ENTER); \
 -	if (!e || strcmp(e->key, k) != 0) \
 -		t_error("hsearch ENTER %s %d failed\n", k, v); \
-+	UK_TEST_ASSERT(!(!e || strcmp(e->key, k) != 0)); \
++	UK_TEST_ASSERTF(!(!e || strcmp(e->key, k) != 0), "hsearch((ENTRY){.key = %s, .data = %d}, ENTER)", k, v); \
  }while(0)
  
  #define get(k) hsearch((ENTRY){.key = k, .data = 0}, FIND)

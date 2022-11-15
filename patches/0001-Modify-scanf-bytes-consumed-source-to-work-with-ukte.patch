@@ -1,18 +1,18 @@
-From ba999cf5bc97c08159763e87321a7a15f12bd6a2 Mon Sep 17 00:00:00 2001
+From 0ff19b6f651b43626aa5be7062257ee0b0f5a29a Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Fri, 28 Oct 2022 17:42:50 +0300
+Date: Tue, 15 Nov 2022 17:00:11 +0200
 Subject: [PATCH] Modify scanf-bytes-consumed source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
 ---
- src/regression/scanf-bytes-consumed.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ src/regression/scanf-bytes-consumed.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
 diff --git a/src/regression/scanf-bytes-consumed.c b/src/regression/scanf-bytes-consumed.c
-index d4e30e4..91cfa7e 100644
+index d4e30e4..33abb8a 100644
 --- a/src/regression/scanf-bytes-consumed.c
 +++ b/src/regression/scanf-bytes-consumed.c
-@@ -1,9 +1,9 @@
+@@ -1,19 +1,14 @@
  // commit: 5efc6af4ebb9d50eb978d0338835544fdfea0396 2011-04-25
  // scanf misreports bytes consumed when EOF is hit (or null for sscanf)
  #include <stdio.h>
@@ -24,16 +24,16 @@ index d4e30e4..91cfa7e 100644
  {
  	char buf[] = { 'a', 'a', 0 };
  	char dest[3];
-@@ -11,9 +11,6 @@ int main(void)
- 	int n;
+ 	int read_count;
+-	int n;
  
- 	n = sscanf(buf, "%s%n", dest, &read_count);
+-	n = sscanf(buf, "%s%n", dest, &read_count);
 -	if(n != 1)
 -		t_error("sscanf matched 1 input items but returned %d\n", n);
 -	if(read_count != 2)
 -		t_error("sscanf consumed 2 bytes but reported %d\n", read_count);
 -	return t_status;
-+	UK_TEST_ASSERT(n == 1);
++	UK_TEST_ASSERT(sscanf(buf, "%s%n", dest, &read_count) == 1);
 +	UK_TEST_ASSERT(read_count == 2);
  }
 -- 

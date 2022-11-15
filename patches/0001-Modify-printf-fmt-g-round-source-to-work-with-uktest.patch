@@ -1,7 +1,7 @@
-From b96e6dc2871a93f215d8d0a357ef877f39dc5844 Mon Sep 17 00:00:00 2001
+From d884597ad8e3751b4b7989e494ea5e1c9e928864 Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Fri, 28 Oct 2022 00:23:58 +0300
-Subject: [PATCH] Modify printf-fmt-g-round source to work with uktest
+Date: Mon, 14 Nov 2022 23:31:18 +0200
+Subject: [PATCH] Modify print-fmt-g-round source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
 ---
@@ -9,7 +9,7 @@ Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
  1 file changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/src/regression/printf-fmt-g-round.c b/src/regression/printf-fmt-g-round.c
-index c5f9a08..021a791 100644
+index c5f9a08..93edb38 100644
 --- a/src/regression/printf-fmt-g-round.c
 +++ b/src/regression/printf-fmt-g-round.c
 @@ -2,20 +2,20 @@
@@ -37,8 +37,8 @@ index c5f9a08..021a791 100644
 -	t("%.12g", 1000000000005.0, "1e+12");
 -	t("%.12g", 100000000002500.0, "1.00000000002e+14");
 -	return t_status;
-+	UK_TEST_EXPECT_ZERO(t("%.12g", 1000000000005.0, "1e+12"));
-+	UK_TEST_EXPECT_ZERO(t("%.12g", 100000000002500.0, "1.00000000002e+14"));
++	UK_TEST_ASSERTF(t("%.12g", 1000000000005.0, "1e+12") == 0, "snprintf(buf, sizeof buf, %s, %lf)", "%.12g", 1000000000005.0);
++	UK_TEST_ASSERTF(t("%.12g", 100000000002500.0, "1.00000000002e+14") == 0, "snprintf(buf, sizeof buf, %s, %lf)", "%.12g", 100000000002500.0);
  }
 -- 
 2.25.1
