@@ -1,6 +1,6 @@
-From 6b628ebff79434ee1366a6f74c0f202eb1a2492a Mon Sep 17 00:00:00 2001
+From fd153c88499aadc884005f93188d19730a3b34c0 Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Mon, 24 Oct 2022 22:13:42 +0300
+Date: Wed, 16 Nov 2022 15:55:49 +0200
 Subject: [PATCH] Modify search_tsearch source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
  1 file changed, 22 insertions(+), 33 deletions(-)
 
 diff --git a/src/functional/search_tsearch.c b/src/functional/search_tsearch.c
-index df257c6..d10ad9c 100644
+index df257c6..19d1799 100644
 --- a/src/functional/search_tsearch.c
 +++ b/src/functional/search_tsearch.c
 @@ -4,7 +4,7 @@
@@ -69,30 +69,30 @@ index df257c6..d10ad9c 100644
 -		t_error("tfind a failed\n");
 -	if (get("z"))
 -		t_error("tfind z should fail\n");
-+	UK_TEST_ASSERT(!(!e || e->v != 1));
-+	UK_TEST_EXPECT_ZERO((get("z")));
++	UK_TEST_ASSERTF(!(!e || e->v != 1), "Element a was found. It's value is %d.", e->v);
++	UK_TEST_ASSERTF(get("z") == NULL, "Element z not found.");
  	e = set("g", 9);
 -	if (e && e->v != 7)
 -		t_error("tsearch g 9 returned data %d, wanted 7\n", e->v);
-+	UK_TEST_ASSERT(!(e && e->v != 7));
++	UK_TEST_ASSERTF(!(e && e->v != 7), "Trying to change value. Previous value was 7. Now %d", e->v);
 +	
  	e = set("g", 9);
 -	if (e && e->v != 7)
 -		t_error("tsearch g 9 returned data %d, wanted 7\n", e->v);
-+	UK_TEST_ASSERT(!(e && e->v != 7));
++	UK_TEST_ASSERTF(!(e && e->v != 7), "Trying to change value. Previous value was 7. Now %d.", e->v);
 +	
  	e = set("i", 9);
 -	if (e && e->v != 9)
 -		t_error("tsearch i 9 returned data %d, wanted 9\n", e->v);
 -	if (del("foobar"))
 -		t_error("tdelete foobar should fail\n");
-+	UK_TEST_ASSERT(!(e && e->v != 9));
-+	UK_TEST_EXPECT_NULL(del("foobar"));
++	UK_TEST_ASSERTF(!(e && e->v != 9), "Inserting new element. Key: i. Value: 9.");
++	UK_TEST_ASSERTF(del("foobar") == NULL, "Trying to delete non-existent key foobar.");
  
  	twalk(root, act);
 -	if (wantc!='j')
 -		t_error("twalk did not visit all nodes (wanted 'j' got '%c')\n", wantc);
-+	UK_TEST_ASSERT((wantc=='j'));
++	UK_TEST_ASSERT(wantc=='j');
  	searchkey = "h";
  	twalk(root, getparent);
 -	if (parent == 0)
@@ -101,24 +101,24 @@ index df257c6..d10ad9c 100644
  	p = del("h");
 -	if (p != parent)
 -		t_error("tdelete h failed to return parent (got %p wanted %p)\n", p, parent);
-+	UK_TEST_ASSERT((p == parent));
++	UK_TEST_ASSERT(p == parent);
  
  	e = *(void**)root;
 -	if (!del(e->k))
 -		t_error("tdelete root \"%s\" failed (returned 0)\n", e->k);
-+	UK_TEST_EXPECT_NOT_NULL(del(e->k));
++	UK_TEST_ASSERTF(del(e->k) != NULL, "Deleting root node.");
  
  	for (; count; count--) {
  		e = *(void**)root;
 -		if (!tdelete(e, &root, cmp))
 -			t_error("tdelete k=%s failed during destruction\n", e->k);
-+		UK_TEST_EXPECT_NOT_NULL(tdelete(e, &root, cmp));
++		UK_TEST_ASSERTF(tdelete(e, &root, cmp) != NULL, "Deleting element with key %s and value %d.", e->k, e->v);
  	}
 -	if (root)
 -		t_error("tree destruction failed: root is nonzero %p\n", root);
 -
 -	return t_status;
-+	UK_TEST_EXPECT_NULL(root);
++	UK_TEST_ASSERTF(root == NULL, "Afte deleting all elements, the root is NULL.");
  }
 -- 
 2.25.1

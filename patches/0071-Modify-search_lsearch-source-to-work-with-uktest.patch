@@ -1,6 +1,6 @@
-From 987233aeca918d928b63372f5508bae92b2c91ed Mon Sep 17 00:00:00 2001
+From fdffce607d4c8b54415fff0b97aa4b472d44f044 Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Mon, 24 Oct 2022 21:11:22 +0300
+Date: Wed, 16 Nov 2022 15:22:27 +0200
 Subject: [PATCH] Modify search_lsearch source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
  1 file changed, 7 insertions(+), 13 deletions(-)
 
 diff --git a/src/functional/search_lsearch.c b/src/functional/search_lsearch.c
-index 711a7a0..d2ae47c 100644
+index 711a7a0..2fcd64b 100644
 --- a/src/functional/search_lsearch.c
 +++ b/src/functional/search_lsearch.c
 @@ -3,7 +3,7 @@
@@ -27,7 +27,7 @@ index 711a7a0..d2ae47c 100644
  	char *r = lsearch(k, tab, &nel, W, (int(*)(const void*,const void*))strcmp); \
 -	if (strcmp(r, k) != 0) \
 -		t_error("lsearch %s failed\n", #k); \
-+	UK_TEST_EXPECT_ZERO((strcmp(r, k))); \
++	UK_TEST_ASSERTF(strcmp(r, k) == 0, "Element %s was added", r); \
  }while(0)
  
  #define get(k) lfind(k, tab, &nel, W, (int(*)(const void*,const void*))strcmp)
@@ -45,19 +45,19 @@ index 711a7a0..d2ae47c 100644
 -		t_error("lfind a failed\n");
 -	if (get("c"))
 -		t_error("lfind c should fail\n");
-+	UK_TEST_EXPECT_NOT_NULL(get("a"));
-+	UK_TEST_EXPECT_NULL(get("c"));
++	UK_TEST_ASSERTF(get("a") != NULL, "Found element a" );
++	UK_TEST_ASSERTF(get("c") == NULL, "Element c not found");
  	n = nel;
  	set("g");
 -	if (nel != n)
 -		t_error("lsearch g should not modify the table size (%d, was %d)\n", nel, n);
-+	UK_TEST_ASSERT((nel == n));
++	UK_TEST_ASSERTF(nel == n, "The size of the array didn't change after searching for g");
  	n = nel;
  	set("j");
 -	if (nel != n+1)
 -		t_error("lsearch j should increase the table size (%d, was %d)\n", nel, n);
 -	return t_status;
-+	UK_TEST_ASSERT((nel == n+1));
++	UK_TEST_ASSERTF(nel == n+1, "The size of the array changed after searching for g");
  }
 -- 
 2.25.1

@@ -1,6 +1,6 @@
-From e0e4b33e7696e7a4ae63e0559be32b7c0d501fcb Mon Sep 17 00:00:00 2001
+From 483d3579fb8e8983fbf82d49d8013c1b799d982a Mon Sep 17 00:00:00 2001
 From: Florin Postolache <florin.postolache80@gmail.com>
-Date: Mon, 24 Oct 2022 19:21:56 +0300
+Date: Wed, 16 Nov 2022 15:00:32 +0200
 Subject: [PATCH] Modify search_insque source to work with uktest
 
 Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
  1 file changed, 5 insertions(+), 9 deletions(-)
 
 diff --git a/src/functional/search_insque.c b/src/functional/search_insque.c
-index 0f4c370..f0a3736 100644
+index 0f4c370..3e36939 100644
 --- a/src/functional/search_insque.c
 +++ b/src/functional/search_insque.c
 @@ -3,7 +3,7 @@
@@ -36,7 +36,7 @@ index 0f4c370..f0a3736 100644
  	while (q) {
 -		if (q->i != --i)
 -			t_error("walking queue: got %d, wanted %d\n", q->i, i);
-+		UK_TEST_ASSERT(q->i == --i);
++		UK_TEST_ASSERTF(q->i == --i, "The element at position %d in queue is %d.", q->i, q->i);
  		q = q->p;
  	}
  	remque(p->p);
@@ -45,7 +45,7 @@ index 0f4c370..f0a3736 100644
 -	if (p->p->n->i != p->i)
 -		t_error("remque: got %d, wanted %d\n", p->p->n->i, p->i);
 -	return t_status;
-+	UK_TEST_ASSERT(p->p->i == p->i-2);
++	UK_TEST_ASSERTF(p->p->i == p->i-2, "After removing element 8, the previous element of %d is %d.", p->i, p->p->i);
 +	UK_TEST_ASSERT(p->p->n->i == p->i);
  }
 -- 

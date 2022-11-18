@@ -29,9 +29,6 @@
     #if defined(CONFIG_LIBUKTEST_ALL) || defined(CONFIG_LIBLIBCTEST_SETJMP_TESTS)
         uk_testsuite_register(uk_libc_setjmp_tests, NULL);
     #endif
-    #if defined(CONFIG_LIBUKTEST_ALL) || defined(CONFIG_LIBLIBCTEST_PLEVAL_TESTS)
-        uk_testsuite_register(uk_libc_pleval_tests, NULL);
-    #endif
     #if defined(CONFIG_LIBUKTEST_ALL) || defined(CONFIG_LIBLIBCTEST_MBFUNC_TESTS)
         uk_testsuite_register(uk_libc_mbfunc_tests, NULL);
     #endif

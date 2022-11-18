@@ -6,21 +6,21 @@ menuconfig LIBLIBCTEST
 if LIBLIBCTEST
 
 	config LIBLIBCTEST_STRING_TESTS
-		bool "Different tests for string functions"
+		bool "String tests"
 		default n
 
 	config LIBLIBCTEST_PTHREAD_TESTS
-		bool "Different tests for pthread functions"
+		bool "Pthread tests"
 		default n
 		depends on !LIBNOLIBC
 
 	config LIBLIBCTEST_CONVERSION_TESTS
-		bool "Tests that convert strings to different data types"
+		bool "Convertion tests"
 		default n
 		depends on !LIBNOLIBC
 	
 	config LIBLIBCTEST_REGEX_TESTS
-		bool "Tests for regex"
+		bool "Regex tests"
 		default n
 		depends on !LIBNOLIBC
 
@@ -47,7 +47,7 @@ if LIBLIBCTEST
 		depends on !LIBNOLIBC
 
 	config LIBLIBCTEST_STRUCTURE_SEARCH_TESTS
-		bool "Different C structure operation tests"
+		bool "Structure search tests"
 		default n
 		depends on !LIBNOLIBC
 
@@ -57,12 +57,12 @@ if LIBLIBCTEST
 		depends on !LIBNOLIBC
 
 	config LIBLIBCTEST_RANDOM_TESTS
-		bool "Random functions tests"
+		bool "Random tests"
 		default n
 		depends on !LIBNOLIBC
 
 	config LIBLIBCTEST_CRYPT_TESTS
-		bool "Different crypt algorithms tests"
+		bool "Crypt algorithms tests"
 		default n
 		depends on !LIBNOLIBC
 
@@ -92,11 +92,6 @@ if LIBLIBCTEST
 
 	config LIBLIBCTEST_MBFUNC_TESTS
 		bool "Mbfuncs tests"
-		default n
-		depends on !LIBNOLIBC
-	
-	config LIBLIBCTEST_PLEVAL_TESTS
-		bool "Pleval tests"
 		default n
 		depends on !LIBNOLIBC
 
