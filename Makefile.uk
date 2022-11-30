@@ -43,7 +43,8 @@ LIBLIBCTEST_PATCHDIR = $(LIBLIBCTEST_BASE)/patches
 LIBLIBCTEST_URL = git://nsz.repo.hu:49100/repo/libc-test
 LIBLIBCTEST_BRANCH = master
 
-$(eval $(call clone,liblibctest,$(LIBLIBCTEST_URL),$(LIBLIBCTEST_BRANCH),$(LIBLIBCTEST_PATCHDIR)))
+$(eval $(call clone,liblibctest,$(LIBLIBCTEST_URL),$(LIBLIBCTEST_BRANCH)))
+$(eval $(call patch,liblibctest,$(LIBLIBCTEST_PATCHDIR)))
 
 ################################################################################
 # Helpers
