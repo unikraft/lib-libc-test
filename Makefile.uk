@@ -40,7 +40,7 @@ $(eval $(call addlib_s,liblibctest,$(CONFIG_LIBLIBCTEST)))
 # Sources
 ################################################################################]
 LIBLIBCTEST_PATCHDIR = $(LIBLIBCTEST_BASE)/patches
-LIBLIBCTEST_URL = git://nsz.repo.hu:49100/repo/libc-test
+LIBLIBCTEST_URL = https://github.com/bytecodealliance/libc-test.git
 LIBLIBCTEST_BRANCH = master
 
 $(eval $(call clone,liblibctest,$(LIBLIBCTEST_URL),$(LIBLIBCTEST_BRANCH)))
@@ -102,6 +102,8 @@ ifneq ($(filter y,$(CONFIG_LIBLIBCTEST_STRING_TESTS) $(CONFIG_LIBUKTEST_ALL)),)
 		LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/regression/iswspace-null.c
 	endif
 endif
+
+LIBLIBCTEST_SRCS-y += $(LIBLIBCTEST_EXTRACTED)/common/setrlim.c
 
 ifeq ($(filter y,$(CONFIG_LIBNOLIBC)),)
 	ifneq ($(filter y,$(CONFIG_LIBLIBCTEST_MALLOC_TESTS) $(CONFIG_LIBLIBCTEST_FILE_FOLDER_TESTS) $(CONFIG_LIBLIBCTEST_ENV_TESTS) $(CONFIG_LIBLIBCTEST_PTHREAD_TESTS) $(CONFIG_LIBUKTEST_ALL)),)
