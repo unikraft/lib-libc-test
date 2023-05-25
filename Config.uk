@@ -1,15 +1,6 @@
 menuconfig LIBLIBCTEST
 	bool "Libc-test Unikraft library"
 	default n
-	select LIBUKTEST
-	select LIBPOSIX_ENVIRON
-	select LIBPOSIX_PROCESS
-	select LIBPOSIX_SYSINFO
-	select LIBPOSIX_TIME
-	select LIBPOSIX_MMAP
-	select LIBUKNOFAULT
-	select LIBUKVMEM
-	select PAGING
 
 if LIBLIBCTEST
 
