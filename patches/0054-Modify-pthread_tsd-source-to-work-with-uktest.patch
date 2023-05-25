@@ -35,7 +35,9 @@ index 6e6360d..718e181 100644
  {
  	pthread_t td;
  	int r;
-@@ -45,5 +44,4 @@ int main(void)
+@@ -43,7 +42,4 @@ int main(void)
+  TESTC(pthread_getspecific(k2) == bar+1, "tsd corrupted");
+  TESTR(r, pthread_setspecific(k1, 0), "failed to clear tsd");
  	TESTR(r, pthread_setspecific(k2, 0), "failed to clear tsd");
 -	TESTR(r, pthread_key_delete(k1), "failed to destroy key");
 -	TESTR(r, pthread_key_delete(k2), "failed to destroy key");
