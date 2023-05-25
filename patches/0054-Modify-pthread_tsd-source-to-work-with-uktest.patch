@@ -37,8 +37,8 @@ index 6e6360d..718e181 100644
  	int r;
 @@ -45,5 +44,4 @@ int main(void)
  	TESTR(r, pthread_setspecific(k2, 0), "failed to clear tsd");
- 	TESTR(r, pthread_key_delete(k1), "failed to destroy key");
- 	TESTR(r, pthread_key_delete(k2), "failed to destroy key");
+-	TESTR(r, pthread_key_delete(k1), "failed to destroy key");
+-	TESTR(r, pthread_key_delete(k2), "failed to destroy key");
 -	return t_status;
  }
 -- 
