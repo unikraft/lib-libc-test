@@ -1,0 +1,6 @@
+name        := "libc-test"
+description := "libc testing library from musl."
+gitrepo     := "git://nsz.repo.hu:49100/repo/libc-test"
+homepage    := "http://nsz.repo.hu/git/?p=libc-test;a=blob;f=README;hb=HEAD"
+version     := 18e2849 sha256:efa29b27311bb3ee017d092811005e917607f195417a2580589ea2b569ea13e4 http://nsz.repo.hu/git/?p=libc-test;a=snapshot;h=18e2849;sf=tgz
+license     := "MIT"
