@@ -9,7 +9,7 @@ Signed-off-by: Florin Postolache <florin.postolache80@gmail.com>
  1 file changed, 8 insertions(+), 21 deletions(-)
 
 diff --git a/src/functional/swprintf.c b/src/functional/swprintf.c
-index 243fae8..f01702e 100644
+index d480c73..f01702e 100644
 --- a/src/functional/swprintf.c
 +++ b/src/functional/swprintf.c
 @@ -9,15 +9,11 @@
@@ -43,9 +43,9 @@ index 243fae8..f01702e 100644
 @@ -130,22 +126,13 @@ int main(void)
  
  	for (j=0; int_tests[j].fmt; j++) {
- 		i = swprintf(b, sizeof b, int_tests[j].fmt, int_tests[j].i);
+ 		i = swprintf(b, sizeof b / sizeof *b, int_tests[j].fmt, int_tests[j].i);
 -		if (i != wcslen(int_tests[j].expect)) {
--			t_error("swprintf(b, sizeof b, \"%ls\", %d) returned %d wanted %d\n",
+-			t_error("swprintf(b, sizeof b / sizeof *b, \"%ls\", %d) returned %d wanted %d\n",
 -				int_tests[j].fmt, int_tests[j].i, i, wcslen(int_tests[j].expect));
 -		}
 -		if (wcscmp(b, int_tests[j].expect) != 0)
@@ -55,9 +55,9 @@ index 243fae8..f01702e 100644
  	}
  
  	for (j=0; fp_tests[j].fmt; j++) {
- 		i = swprintf(b, sizeof b, fp_tests[j].fmt, fp_tests[j].f);
+ 		i = swprintf(b, sizeof b / sizeof *b, fp_tests[j].fmt, fp_tests[j].f);
 -		if (i != wcslen(fp_tests[j].expect)) {
--			t_error("swprintf(b, sizeof b, \"%ls\", %f) returned %d wanted %d\n",
+-			t_error("swprintf(b, sizeof b / sizeof *b, \"%ls\", %f) returned %d wanted %d\n",
 -				fp_tests[j].fmt, fp_tests[j].f, i, wcslen(fp_tests[j].expect));
 -		}
 -		if (wcscmp(b, fp_tests[j].expect) != 0)
